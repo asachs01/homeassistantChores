@@ -97,7 +97,7 @@
         "testStrategy": "Unit tests for streak logic with mock completion data. Verify cron runs, updates correctly across edge cases (missed days, partial routines).",
         "priority": "medium",
         "dependencies": [6, 8],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -108,7 +108,7 @@
         "testStrategy": "Test earning addition, monthly reset simulation, balance queries accurate.",
         "priority": "medium",
         "dependencies": [8],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -119,7 +119,7 @@
         "testStrategy": "Verify aggregates correct (completion rates), permissions enforced. Responsive on tablet.",
         "priority": "medium",
         "dependencies": [7],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {

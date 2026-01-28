@@ -11,6 +11,7 @@ const Task = require('../models/Task');
 const Completion = require('../models/Completion');
 const { requireAuth } = require('../middleware/auth');
 const { isScheduledForDate } = require('../utils/schedule');
+const { cacheDashboard, invalidateUser } = require('../middleware/cache');
 
 /**
  * GET /api/dashboard
@@ -20,8 +21,10 @@ const { isScheduledForDate } = require('../utils/schedule');
  * - Current streak count
  * - Current balance
  * - Completion status for today
+ *
+ * Cached per user for 30 seconds
  */
-router.get('/api/dashboard', requireAuth, async (req, res) => {
+router.get('/api/dashboard', requireAuth, cacheDashboard, async (req, res) => {
   try {
     const userId = req.user.userId;
     const householdId = req.user.householdId;
@@ -164,6 +167,9 @@ router.post('/api/dashboard/complete/:taskId', requireAuth, async (req, res) => 
     // Create completion
     const completion = await Completion.create(taskId, userId, today);
 
+    // Invalidate dashboard cache for this user
+    invalidateUser(userId);
+
     // Get updated balance
     const balance = await Completion.getBalance(userId);
 
@@ -211,6 +217,9 @@ router.post('/api/dashboard/undo/:completionId', requireAuth, async (req, res) =
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }
+
+    // Invalidate dashboard cache for this user
+    invalidateUser(userId);
 
     // Get updated balance
     const balance = await Completion.getBalance(userId);

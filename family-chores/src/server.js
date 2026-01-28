@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const path = require('path');
 const { initialize } = require('./db/init');
 const { testConnection, getPoolStatus } = require('./db/pool');
@@ -10,7 +11,9 @@ const onboardingRoutes = require('./routes/onboarding');
 const dashboardRoutes = require('./routes/dashboard');
 const balanceRoutes = require('./routes/balance');
 const familyRoutes = require('./routes/family');
+const notificationRoutes = require('./routes/notifications');
 const { startStreakCalculator } = require('./jobs/streakCalculator');
+const { getStats: getCacheStats } = require('./middleware/cache');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +24,19 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Response compression - compress all responses > 1KB
+app.use(compression({
+  threshold: 1024,
+  filter: (req, res) => {
+    // Don't compress if client doesn't support it
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    // Use default compression filter
+    return compression.filter(req, res);
+  }
 }));
 
 // JSON body parser
@@ -49,6 +65,14 @@ app.get('/api/db/status', async (req, res) => {
   });
 });
 
+// Cache status endpoint
+app.get('/api/cache/status', (req, res) => {
+  res.json({
+    cache: getCacheStats(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Auth routes
 app.use(authRoutes);
 
@@ -69,6 +93,9 @@ app.use(balanceRoutes);
 
 // Family dashboard routes
 app.use(familyRoutes);
+
+// Notification routes
+app.use(notificationRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -12,6 +12,7 @@ const Routine = require('../models/Routine');
 const Completion = require('../models/Completion');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { isScheduledForDate } = require('../utils/schedule');
+const { cacheFamilyDashboard, invalidateHousehold } = require('../middleware/cache');
 
 /**
  * GET /api/family/dashboard
@@ -21,8 +22,9 @@ const { isScheduledForDate } = require('../utils/schedule');
  * - Household vacation mode status
  *
  * Requires admin (parent) role
+ * Cached per household for 30 seconds
  */
-router.get('/api/family/dashboard', requireAuth, requireAdmin, async (req, res) => {
+router.get('/api/family/dashboard', requireAuth, requireAdmin, cacheFamilyDashboard, async (req, res) => {
   try {
     const householdId = req.user.householdId;
     const today = new Date();
@@ -162,6 +164,9 @@ router.post('/api/family/vacation-mode', requireAuth, requireAdmin, async (req, 
       return res.status(404).json({ error: 'Household not found' });
     }
 
+    // Invalidate family dashboard cache for this household
+    invalidateHousehold(householdId);
+
     res.json({
       success: true,
       vacationMode: household.vacationMode
@@ -230,6 +235,9 @@ router.post('/api/family/sick-day/:userId', requireAuth, requireAdmin, async (re
         });
       }
     }
+
+    // Invalidate family dashboard cache for this household
+    invalidateHousehold(householdId);
 
     res.json({
       success: true,

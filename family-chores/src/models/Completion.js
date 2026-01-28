@@ -6,6 +6,7 @@
 const { query } = require('../db/pool');
 const { getMilestone, isMilestone } = require('../config/milestones');
 const Balance = require('./Balance');
+const Notification = require('./Notification');
 
 // Time window in minutes for undo functionality
 const UNDO_WINDOW_MINUTES = 5;
@@ -33,9 +34,43 @@ class Completion {
     const completion = Completion.formatCompletion(result.rows[0]);
 
     // Update balance for the user based on task dollar value
-    await Completion.updateBalance(taskId, userId);
+    const balanceResult = await Completion.updateBalance(taskId, userId);
+
+    // Create notification for task completion
+    await Completion.createTaskCompletionNotification(taskId, userId, balanceResult);
 
     return completion;
+  }
+
+  /**
+   * Create a notification for task completion
+   * @param {string} taskId - The task UUID
+   * @param {string} userId - The user UUID
+   * @param {Object|null} balanceResult - Result from balance update
+   */
+  static async createTaskCompletionNotification(taskId, userId, balanceResult) {
+    try {
+      // Get task name
+      const taskResult = await query(
+        'SELECT name, dollar_value FROM tasks WHERE id = $1',
+        [taskId]
+      );
+
+      if (taskResult.rows.length === 0) return;
+
+      const taskName = taskResult.rows[0].name;
+      const dollarValue = parseFloat(taskResult.rows[0].dollar_value) || 0;
+
+      let message = `You completed "${taskName}"!`;
+      if (dollarValue > 0) {
+        message += ` Earned $${dollarValue.toFixed(2)}.`;
+      }
+
+      await Notification.create(userId, 'task_complete', message);
+    } catch (err) {
+      // Log but don't fail the completion
+      console.error('Error creating task completion notification:', err);
+    }
   }
 
   /**
@@ -562,10 +597,72 @@ class Completion {
       if (milestone) {
         await Completion.awardMilestoneBonus(userId, milestone, routineId);
         result.milestone = milestone;
+
+        // Create notification for milestone
+        await Completion.createMilestoneNotification(userId, milestone, routineId);
       }
     }
 
+    // Create notification if streak was broken
+    if (result.streakBroken) {
+      await Completion.createStreakBrokenNotification(userId, previousStreak.currentCount, routineId);
+    }
+
     return result;
+  }
+
+  /**
+   * Create a notification for reaching a streak milestone
+   * @param {string} userId - The user UUID
+   * @param {Object} milestone - The milestone object
+   * @param {string} routineId - The routine UUID
+   */
+  static async createMilestoneNotification(userId, milestone, routineId) {
+    try {
+      // Get routine name
+      let routineName = 'routine';
+      if (routineId) {
+        const routineResult = await query(
+          'SELECT name FROM routines WHERE id = $1',
+          [routineId]
+        );
+        if (routineResult.rows.length > 0) {
+          routineName = routineResult.rows[0].name;
+        }
+      }
+
+      const message = `Streak milestone reached! ${milestone.label} (${milestone.days} days) on "${routineName}". Bonus: $${milestone.bonus.toFixed(2)}!`;
+      await Notification.create(userId, 'streak_milestone', message);
+    } catch (err) {
+      console.error('Error creating milestone notification:', err);
+    }
+  }
+
+  /**
+   * Create a notification for broken streak
+   * @param {string} userId - The user UUID
+   * @param {number} previousCount - The previous streak count
+   * @param {string} routineId - The routine UUID
+   */
+  static async createStreakBrokenNotification(userId, previousCount, routineId) {
+    try {
+      // Get routine name
+      let routineName = 'routine';
+      if (routineId) {
+        const routineResult = await query(
+          'SELECT name FROM routines WHERE id = $1',
+          [routineId]
+        );
+        if (routineResult.rows.length > 0) {
+          routineName = routineResult.rows[0].name;
+        }
+      }
+
+      const message = `Your ${previousCount}-day streak on "${routineName}" was broken. Start fresh today!`;
+      await Notification.create(userId, 'streak_broken', message);
+    } catch (err) {
+      console.error('Error creating streak broken notification:', err);
+    }
   }
 }
 

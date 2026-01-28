@@ -4,87 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Family Household Manager</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-      min-height: 100vh;
-      padding: 2rem;
-      color: #374151;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      text-align: center;
-      color: #6366f1;
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
-      font-weight: 600;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      margin-bottom: 1.5rem;
-    }
-
-    .status-card {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .status-indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #d1d5db;
-    }
-
-    .status-indicator.ok {
-      background: #10b981;
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
-    }
-
-    .status-indicator.error {
-      background: #ef4444;
-      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
-    }
-
-    .status-text {
-      font-size: 1rem;
-      color: #6b7280;
-    }
-
-    .status-text strong {
-      color: #374151;
-    }
-
-    .timestamp {
-      font-size: 0.875rem;
-      color: #9ca3af;
-      margin-top: 0.5rem;
-    }
-
-    .welcome-message {
-      text-align: center;
-      color: #6b7280;
-      font-size: 1.125rem;
-      line-height: 1.75;
-    }
-  </style>
+  <!-- Preconnect hints for performance -->
+  <link rel="preconnect" href="/api" crossorigin>
+  <link rel="dns-prefetch" href="/api">
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#e4e8f0 100%);min-height:100vh;padding:2rem;color:#374151}.container{max-width:800px;margin:0 auto}h1{text-align:center;color:#6366f1;font-size:2.5rem;margin-bottom:2rem;font-weight:600}.card{background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);margin-bottom:1.5rem}.status-card{display:flex;align-items:center;gap:1rem}.status-indicator{width:12px;height:12px;border-radius:50%;background:#d1d5db}.status-indicator.ok{background:#10b981;box-shadow:0 0 8px rgba(16,185,129,.5)}.status-indicator.error{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.5)}.status-text{font-size:1rem;color:#6b7280}.status-text strong{color:#374151}.timestamp{font-size:.875rem;color:#9ca3af;margin-top:.5rem}.welcome-message{text-align:center;color:#6b7280;font-size:1.125rem;line-height:1.75}</style>
 </head>
 <body>
   <div class="container">

@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Chores - Family Household Manager</title>
+  <!-- Preconnect hints for performance -->
+  <link rel="preconnect" href="/api" crossorigin>
+  <link rel="dns-prefetch" href="/api">
   <style>
     * {
       box-sizing: border-box;
@@ -553,6 +556,255 @@
       color: #E53935;
     }
 
+    /* Notification Bell */
+    .notification-wrapper {
+      position: relative;
+    }
+
+    .notification-bell {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      position: relative;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .notification-bell:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: #E53935;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+    }
+
+    .notification-badge.hidden {
+      display: none;
+    }
+
+    /* Notification Dropdown */
+    .notification-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 360px;
+      max-height: 480px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      display: none;
+      overflow: hidden;
+    }
+
+    .notification-dropdown.open {
+      display: block;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .notification-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #E0E0E0;
+    }
+
+    .notification-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #5D4E6D;
+    }
+
+    .mark-all-read {
+      background: none;
+      border: none;
+      color: #7E57C2;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mark-all-read:hover {
+      text-decoration: underline;
+    }
+
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .notification-item {
+      padding: 14px 20px;
+      border-bottom: 1px solid #F5F5F5;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .notification-item:hover {
+      background: #F8F9FA;
+    }
+
+    .notification-item.unread {
+      background: #F3E5F5;
+    }
+
+    .notification-item.unread:hover {
+      background: #EDE7F6;
+    }
+
+    .notification-icon {
+      display: inline-block;
+      margin-right: 10px;
+      font-size: 1.1rem;
+    }
+
+    .notification-message {
+      font-size: 0.9rem;
+      color: #424242;
+      line-height: 1.4;
+    }
+
+    .notification-time {
+      font-size: 0.75rem;
+      color: #9E9E9E;
+      margin-top: 5px;
+    }
+
+    .notification-empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: #9E9E9E;
+    }
+
+    .notification-empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 100px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      max-width: 400px;
+      animation: toastSlideIn 0.3s ease-out;
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .toast.toast-exit {
+      animation: toastSlideOut 0.3s ease-in forwards;
+    }
+
+    @keyframes toastSlideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+
+    .toast-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-message {
+      font-size: 0.9rem;
+      color: #424242;
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      color: #9E9E9E;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 4px;
+    }
+
+    .toast-close:hover {
+      color: #616161;
+    }
+
+    .toast.task_complete {
+      border-left: 4px solid #81C784;
+    }
+
+    .toast.streak_milestone {
+      border-left: 4px solid #FFD54F;
+    }
+
+    .toast.streak_broken {
+      border-left: 4px solid #E53935;
+    }
+
+    .toast.balance_update {
+      border-left: 4px solid #64B5F6;
+    }
+
+    .toast.system {
+      border-left: 4px solid #9E9E9E;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .header-content {
@@ -589,6 +841,29 @@
         width: 56px;
         height: 56px;
         font-size: 28px;
+      }
+
+      .notification-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 70vh;
+        border-radius: 16px 16px 0 0;
+      }
+
+      .toast-container {
+        left: 10px;
+        right: 10px;
+        top: auto;
+        bottom: 80px;
+      }
+
+      .toast {
+        min-width: auto;
+        max-width: none;
       }
     }
 
@@ -629,6 +904,9 @@
   <!-- Confetti Container -->
   <div id="confetti-container" class="confetti-container"></div>
 
+  <!-- Toast Container for Notifications -->
+  <div id="toast-container" class="toast-container"></div>
+
   <!-- Header -->
   <header class="dashboard-header">
     <div class="header-content">
@@ -654,6 +932,22 @@
           <div>
             <div class="stat-value" id="balance-value">$0.00</div>
             <div class="stat-label">Balance</div>
+          </div>
+        </div>
+
+        <div class="notification-wrapper">
+          <button class="notification-bell" id="notification-bell" onclick="toggleNotifications()">
+            &#x1F514;
+            <span class="notification-badge hidden" id="notification-badge">0</span>
+          </button>
+          <div class="notification-dropdown" id="notification-dropdown">
+            <div class="notification-header">
+              <span class="notification-title">Notifications</span>
+              <button class="mark-all-read" onclick="markAllNotificationsRead()">Mark all read</button>
+            </div>
+            <div class="notification-list" id="notification-list">
+              <!-- Notifications loaded dynamically -->
+            </div>
           </div>
         </div>
 
@@ -1260,6 +1554,349 @@
       localStorage.removeItem('user');
       window.location.href = '/login.html';
     }
+
+    // ========== Notification Functions ==========
+
+    let notificationsData = [];
+    let lastNotificationCheck = null;
+
+    // Load notifications
+    async function loadNotifications() {
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('/api/notifications?limit=20', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (response.status === 401) {
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to load notifications');
+        }
+
+        var data = await response.json();
+        notificationsData = data.notifications;
+        renderNotifications();
+        updateNotificationBadge();
+
+        // Check for new notifications to show as toasts
+        checkForNewNotifications(data.notifications);
+
+      } catch (err) {
+        console.error('Error loading notifications:', err);
+      }
+    }
+
+    // Load unread count only
+    async function loadUnreadCount() {
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('/api/notifications/unread-count', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (!response.ok) return;
+
+        var data = await response.json();
+        updateNotificationBadge(data.count);
+      } catch (err) {
+        console.error('Error loading unread count:', err);
+      }
+    }
+
+    // Update notification badge
+    function updateNotificationBadge(count) {
+      var badge = document.getElementById('notification-badge');
+      if (count === undefined) {
+        count = notificationsData.filter(function(n) { return !n.read; }).length;
+      }
+
+      if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    // Render notifications in dropdown
+    function renderNotifications() {
+      var list = document.getElementById('notification-list');
+
+      // Clear existing
+      while (list.firstChild) {
+        list.removeChild(list.firstChild);
+      }
+
+      if (notificationsData.length === 0) {
+        var empty = document.createElement('div');
+        empty.className = 'notification-empty';
+
+        var emptyIcon = document.createElement('div');
+        emptyIcon.className = 'notification-empty-icon';
+        emptyIcon.textContent = '\u{1F514}';
+        empty.appendChild(emptyIcon);
+
+        var emptyText = document.createElement('div');
+        emptyText.textContent = 'No notifications yet';
+        empty.appendChild(emptyText);
+
+        list.appendChild(empty);
+        return;
+      }
+
+      notificationsData.forEach(function(notification) {
+        var item = createNotificationItem(notification);
+        list.appendChild(item);
+      });
+    }
+
+    // Create notification item element
+    function createNotificationItem(notification) {
+      var item = document.createElement('div');
+      item.className = 'notification-item' + (notification.read ? '' : ' unread');
+      item.setAttribute('data-notification-id', notification.id);
+
+      var icon = document.createElement('span');
+      icon.className = 'notification-icon';
+      icon.textContent = getNotificationIcon(notification.type);
+
+      var content = document.createElement('div');
+
+      var message = document.createElement('div');
+      message.className = 'notification-message';
+      message.textContent = notification.message;
+
+      var time = document.createElement('div');
+      time.className = 'notification-time';
+      time.textContent = formatNotificationTime(notification.createdAt);
+
+      content.appendChild(message);
+      content.appendChild(time);
+
+      item.appendChild(icon);
+      item.appendChild(content);
+
+      item.onclick = function() {
+        markNotificationRead(notification.id);
+      };
+
+      return item;
+    }
+
+    // Get icon for notification type
+    function getNotificationIcon(type) {
+      switch (type) {
+        case 'task_complete':
+          return '\u2705';
+        case 'streak_milestone':
+          return '\u{1F3C6}';
+        case 'streak_broken':
+          return '\u{1F494}';
+        case 'balance_update':
+          return '\u{1F4B0}';
+        default:
+          return '\u{1F514}';
+      }
+    }
+
+    // Format notification time
+    function formatNotificationTime(dateStr) {
+      var date = new Date(dateStr);
+      var now = new Date();
+      var diff = now - date;
+
+      var minutes = Math.floor(diff / 60000);
+      var hours = Math.floor(diff / 3600000);
+      var days = Math.floor(diff / 86400000);
+
+      if (minutes < 1) {
+        return 'Just now';
+      } else if (minutes < 60) {
+        return minutes + ' min ago';
+      } else if (hours < 24) {
+        return hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+      } else if (days < 7) {
+        return days + ' day' + (days > 1 ? 's' : '') + ' ago';
+      } else {
+        return date.toLocaleDateString();
+      }
+    }
+
+    // Toggle notification dropdown
+    function toggleNotifications() {
+      var dropdown = document.getElementById('notification-dropdown');
+      var isOpen = dropdown.classList.contains('open');
+
+      if (isOpen) {
+        dropdown.classList.remove('open');
+      } else {
+        dropdown.classList.add('open');
+        loadNotifications();
+      }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      var wrapper = document.querySelector('.notification-wrapper');
+      var dropdown = document.getElementById('notification-dropdown');
+
+      if (wrapper && !wrapper.contains(e.target) && dropdown.classList.contains('open')) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    // Mark single notification as read
+    async function markNotificationRead(id) {
+      try {
+        var token = localStorage.getItem('token');
+        await fetch('/api/notifications/' + id + '/read', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        // Update local state
+        var notification = notificationsData.find(function(n) { return n.id === id; });
+        if (notification) {
+          notification.read = true;
+        }
+
+        // Update UI
+        var item = document.querySelector('[data-notification-id="' + id + '"]');
+        if (item) {
+          item.classList.remove('unread');
+        }
+
+        updateNotificationBadge();
+      } catch (err) {
+        console.error('Error marking notification as read:', err);
+      }
+    }
+
+    // Mark all notifications as read
+    async function markAllNotificationsRead() {
+      try {
+        var token = localStorage.getItem('token');
+        await fetch('/api/notifications/read-all', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        // Update local state
+        notificationsData.forEach(function(n) { n.read = true; });
+
+        // Update UI
+        var items = document.querySelectorAll('.notification-item.unread');
+        items.forEach(function(item) {
+          item.classList.remove('unread');
+        });
+
+        updateNotificationBadge();
+      } catch (err) {
+        console.error('Error marking all notifications as read:', err);
+      }
+    }
+
+    // Check for new notifications and show toasts
+    function checkForNewNotifications(notifications) {
+      if (!lastNotificationCheck) {
+        // First load, store the timestamp and don't show toasts
+        if (notifications.length > 0) {
+          lastNotificationCheck = new Date(notifications[0].createdAt);
+        } else {
+          lastNotificationCheck = new Date();
+        }
+        return;
+      }
+
+      // Find notifications newer than last check
+      var newNotifications = notifications.filter(function(n) {
+        return new Date(n.createdAt) > lastNotificationCheck && !n.read;
+      });
+
+      // Show toasts for new notifications (max 3)
+      newNotifications.slice(0, 3).forEach(function(n, index) {
+        setTimeout(function() {
+          showToast(n);
+        }, index * 300);
+      });
+
+      // Update last check time
+      if (notifications.length > 0) {
+        lastNotificationCheck = new Date(notifications[0].createdAt);
+      }
+    }
+
+    // Show toast notification
+    function showToast(notification) {
+      var container = document.getElementById('toast-container');
+
+      var toast = document.createElement('div');
+      toast.className = 'toast ' + notification.type;
+
+      var icon = document.createElement('span');
+      icon.className = 'toast-icon';
+      icon.textContent = getNotificationIcon(notification.type);
+
+      var content = document.createElement('div');
+      content.className = 'toast-content';
+
+      var message = document.createElement('div');
+      message.className = 'toast-message';
+      message.textContent = notification.message;
+
+      content.appendChild(message);
+
+      var closeBtn = document.createElement('button');
+      closeBtn.className = 'toast-close';
+      closeBtn.textContent = '\u2715';
+      closeBtn.onclick = function() {
+        closeToast(toast);
+      };
+
+      toast.appendChild(icon);
+      toast.appendChild(content);
+      toast.appendChild(closeBtn);
+
+      container.appendChild(toast);
+
+      // Auto-remove after 5 seconds
+      setTimeout(function() {
+        closeToast(toast);
+      }, 5000);
+    }
+
+    // Close toast
+    function closeToast(toast) {
+      if (toast && toast.parentElement) {
+        toast.classList.add('toast-exit');
+        setTimeout(function() {
+          if (toast.parentElement) {
+            toast.parentElement.removeChild(toast);
+          }
+        }, 300);
+      }
+    }
+
+    // Poll for new notifications every 30 seconds
+    setInterval(function() {
+      loadUnreadCount();
+    }, 30000);
+
+    // Load initial notification count after dashboard loads
+    setTimeout(function() {
+      loadUnreadCount();
+    }, 1000);
   </script>
 </body>
 </html>

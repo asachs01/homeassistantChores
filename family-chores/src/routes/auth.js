@@ -8,13 +8,15 @@ const { query } = require('../db/pool');
 const { verifyPin } = require('../utils/pin');
 const { generateToken } = require('../auth/jwt');
 const { requireAuth } = require('../middleware/auth');
+const { cacheUserList } = require('../middleware/cache');
 const avatars = require('../data/avatars.json');
 
 /**
  * GET /api/users
  * List all users (id, name, avatar only) for login screen
+ * Cached globally for 60 seconds
  */
-router.get('/api/users', async (req, res) => {
+router.get('/api/users', cacheUserList, async (req, res) => {
   try {
     const result = await query(
       'SELECT id, name, avatar FROM users ORDER BY name'

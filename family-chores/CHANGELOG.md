@@ -8,6 +8,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Performance optimizations for improved response times and reduced database load
+  - In-memory cache middleware (`src/middleware/cache.js`)
+    - Simple TTL-based cache with automatic expiration
+    - Dashboard data cached for 30 seconds per user
+    - Family dashboard cached for 30 seconds per household
+    - User list cached globally for 60 seconds
+    - Automatic cache invalidation on mutations (complete task, undo, vacation mode, sick day)
+    - Cache statistics endpoint at `GET /api/cache/status`
+    - Periodic cleanup of expired entries (every 5 minutes)
+  - Response compression middleware using `compression` package
+    - Compresses all API responses larger than 1KB
+    - Supports gzip and deflate encoding
+  - Additional database performance indexes in schema
+    - `idx_tasks_household_type` - composite index for bonus tasks query
+    - `idx_completions_task_date` - composite index for task completion checks
+    - `idx_routines_household_user` - composite index for routine lookups
+    - `idx_streaks_user_routine` - composite index for streak data retrieval
+    - `idx_users_name` - index for user list ordering
+    - `idx_balance_transactions_user_created` - composite index for transaction pagination
+  - Frontend performance optimizations in all HTML files
+    - Added `preconnect` and `dns-prefetch` hints for API endpoints
+    - Minified inline CSS in index.html and login.html
+- In-app notification system for user engagement and feedback
+  - Notification model (`src/models/Notification.js`) with full CRUD operations
+    - `Notification.create(userId, type, message)` - create new notification
+    - `Notification.findByUser(userId, options)` - paginated notification list
+    - `Notification.markAsRead(id)` - mark single notification as read
+    - `Notification.markAllAsRead(userId)` - mark all user notifications as read
+    - `Notification.getUnreadCount(userId)` - get unread notification count
+    - `Notification.deleteOld(daysOld)` - cleanup old notifications
+  - Notification routes (`src/routes/notifications.js`) with authentication
+    - `GET /api/notifications` - list notifications with pagination
+    - `POST /api/notifications/:id/read` - mark notification as read
+    - `POST /api/notifications/read-all` - mark all notifications as read
+    - `GET /api/notifications/unread-count` - get unread count
+  - Notification types: task_complete, streak_milestone, streak_broken, balance_update, system
+  - Automatic notification triggers on task completion and streak milestones
+  - Dashboard notification UI components
+    - Notification bell icon with unread count badge
+    - Dropdown list of notifications with read/unread styling
+    - Toast notifications for new items with auto-dismiss
+    - Mobile-responsive design
+  - Background polling for new notifications (30-second interval)
+- Database schema update for notifications table with indexes
 - Balance model (`src/models/Balance.js`) for comprehensive balance and earnings management
   - `Balance.get(userId)` - retrieve current balance for a user
   - `Balance.add(userId, amount, type, description)` - add transaction (earned, adjustment, bonus)

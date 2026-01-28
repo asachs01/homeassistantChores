@@ -123,3 +123,45 @@ CREATE TABLE IF NOT EXISTS balance_transactions (
 CREATE INDEX IF NOT EXISTS idx_balance_transactions_user_id ON balance_transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_balance_transactions_type ON balance_transactions(type);
 CREATE INDEX IF NOT EXISTS idx_balance_transactions_created_at ON balance_transactions(created_at);
+
+-- Notifications table
+CREATE TABLE IF NOT EXISTS notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type VARCHAR(50) NOT NULL CHECK (type IN ('task_complete', 'streak_milestone', 'streak_broken', 'balance_update', 'system')),
+    message TEXT NOT NULL,
+    read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(user_id, read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at);
+
+-- =============================================================================
+-- Additional Performance Indexes
+-- =============================================================================
+
+-- Composite index for task lookups by household and type (used in bonus tasks query)
+-- EXPLAIN ANALYZE: Speeds up getBonusTasks() query which filters by household_id AND type
+CREATE INDEX IF NOT EXISTS idx_tasks_household_type ON tasks(household_id, type);
+
+-- Composite index for completions lookup by task and date (used to check if task already claimed)
+-- EXPLAIN ANALYZE: Speeds up findByTaskAndDate() query in dashboard routes
+CREATE INDEX IF NOT EXISTS idx_completions_task_date ON completions(task_id, completion_date);
+
+-- Composite index for routines lookup by household and assigned user
+-- EXPLAIN ANALYZE: Speeds up Routine.findAll() query which filters by household AND optional user
+CREATE INDEX IF NOT EXISTS idx_routines_household_user ON routines(household_id, assigned_user_id);
+
+-- Composite index for streaks lookup (used in streak data retrieval)
+-- Note: UNIQUE constraint on (user_id, routine_id) already provides this, but explicit for clarity
+CREATE INDEX IF NOT EXISTS idx_streaks_user_routine ON streaks(user_id, routine_id);
+
+-- Index for users ordered by name (used in login screen user list)
+-- EXPLAIN ANALYZE: Speeds up /api/users query which orders by name
+CREATE INDEX IF NOT EXISTS idx_users_name ON users(name);
+
+-- Composite index for balance transactions by user and creation time
+-- EXPLAIN ANALYZE: Speeds up getTransactions() query with pagination
+CREATE INDEX IF NOT EXISTS idx_balance_transactions_user_created ON balance_transactions(user_id, created_at DESC);
