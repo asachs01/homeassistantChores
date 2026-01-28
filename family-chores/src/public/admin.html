@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Family Household Manager</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #E8F5E9 0%, #F3E5F5 50%, #E3F2FD 100%);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* Header */
+    .admin-header {
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      font-size: 32px;
+    }
+
+    .header-text h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #5D4E6D;
+    }
+
+    .header-text .subtitle {
+      font-size: 0.9rem;
+      color: #9E9E9E;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      background: #F5F5F5;
+      border: none;
+      color: #5D4E6D;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      background: #EEEEEE;
+    }
+
+    .logout-btn {
+      background: none;
+      border: 2px solid #E0E0E0;
+      color: #9E9E9E;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      border-color: #E53935;
+      color: #E53935;
+    }
+
+    /* Main Content */
+    .admin-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    /* Tabs */
+    .tabs-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .tabs-nav {
+      display: flex;
+      border-bottom: 2px solid #F0F0F0;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #9E9E9E;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 64px;
+    }
+
+    .tab-btn:hover {
+      background: #FAFAFA;
+      color: #5D4E6D;
+    }
+
+    .tab-btn.active {
+      color: #7E57C2;
+      border-bottom: 3px solid #7E57C2;
+      margin-bottom: -2px;
+    }
+
+    .tab-icon {
+      font-size: 1.3rem;
+    }
+
+    .tab-content {
+      padding: 24px;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #5D4E6D;
+    }
+
+    .add-btn {
+      background: linear-gradient(135deg, #7E57C2 0%, #673AB7 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(126, 87, 194, 0.4);
+    }
+
+    .add-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* List Items */
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .item-card {
+      background: #F8F9FA;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.2s;
+    }
+
+    .item-card:hover {
+      background: #F0F1F3;
+    }
+
+    .item-card.dragging {
+      opacity: 0.5;
+      background: #E8E9EB;
+    }
+
+    .item-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .item-icon.user {
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+    }
+
+    .item-icon.task {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    }
+
+    .item-icon.routine {
+      background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    }
+
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      margin-bottom: 4px;
+    }
+
+    .item-meta {
+      font-size: 0.85rem;
+      color: #9E9E9E;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .item-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .item-badge.parent {
+      background: #E3F2FD;
+      color: #1976D2;
+    }
+
+    .item-badge.child {
+      background: #F3E5F5;
+      color: #7B1FA2;
+    }
+
+    .item-badge.routine-type {
+      background: #E8F5E9;
+      color: #388E3C;
+    }
+
+    .item-badge.bonus-type {
+      background: #FFF3E0;
+      color: #E65100;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+
+    .action-btn.edit {
+      background: #E3F2FD;
+      color: #1976D2;
+    }
+
+    .action-btn.edit:hover {
+      background: #BBDEFB;
+    }
+
+    .action-btn.delete {
+      background: #FFEBEE;
+      color: #E53935;
+    }
+
+    .action-btn.delete:hover {
+      background: #FFCDD2;
+    }
+
+    .action-btn.drag {
+      background: #F5F5F5;
+      color: #9E9E9E;
+      cursor: grab;
+    }
+
+    .action-btn.drag:active {
+      cursor: grabbing;
+    }
+
+    /* Routine Tasks */
+    .routine-tasks {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #E0E0E0;
+    }
+
+    .routine-tasks-title {
+      font-size: 0.85rem;
+      color: #9E9E9E;
+      margin-bottom: 8px;
+    }
+
+    .routine-task-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .routine-task-chip {
+      background: #E8F5E9;
+      color: #388E3C;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .routine-task-chip .chip-icon {
+      font-size: 0.9rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+    }
+
+    .empty-state-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      margin-bottom: 8px;
+    }
+
+    .empty-state-text {
+      color: #9E9E9E;
+      margin-bottom: 20px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      padding: 20px;
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+
+    .modal-overlay.visible .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #5D4E6D;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #9E9E9E;
+      cursor: pointer;
+      padding: 8px;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: #5D4E6D;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #E0E0E0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #7E57C2;
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #E0E0E0;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: white;
+      cursor: pointer;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: #7E57C2;
+    }
+
+    .form-hint {
+      font-size: 0.8rem;
+      color: #9E9E9E;
+      margin-top: 6px;
+    }
+
+    /* Checkbox Group */
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #F5F5F5;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 80px;
+      justify-content: center;
+    }
+
+    .checkbox-item:hover {
+      background: #EEEEEE;
+    }
+
+    .checkbox-item.checked {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      color: #388E3C;
+    }
+
+    .checkbox-item input {
+      display: none;
+    }
+
+    /* Multi-select for users */
+    .user-select-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .user-select-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #F5F5F5;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .user-select-item:hover {
+      background: #EEEEEE;
+    }
+
+    .user-select-item.selected {
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+    }
+
+    .user-select-item input {
+      display: none;
+    }
+
+    .user-select-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: #E0E0E0;
+    }
+
+    .user-select-name {
+      flex: 1;
+      font-weight: 500;
+      color: #5D4E6D;
+    }
+
+    .user-select-check {
+      font-size: 1.2rem;
+      color: #1976D2;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .user-select-item.selected .user-select-check {
+      opacity: 1;
+    }
+
+    /* Task select for routines */
+    .task-select-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .task-select-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #F5F5F5;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .task-select-item:hover {
+      background: #EEEEEE;
+    }
+
+    .task-select-item.selected {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    }
+
+    .task-select-item input {
+      display: none;
+    }
+
+    .task-select-icon {
+      font-size: 1.3rem;
+    }
+
+    .task-select-name {
+      flex: 1;
+      font-weight: 500;
+      color: #5D4E6D;
+    }
+
+    .task-select-check {
+      font-size: 1.2rem;
+      color: #388E3C;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .task-select-item.selected .task-select-check {
+      opacity: 1;
+    }
+
+    /* Avatar Picker */
+    .avatar-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .avatar-option {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all 0.2s;
+    }
+
+    .avatar-option:hover {
+      transform: scale(1.1);
+    }
+
+    .avatar-option.selected {
+      border-color: #7E57C2;
+      box-shadow: 0 0 0 3px rgba(126, 87, 194, 0.2);
+    }
+
+    /* Form Buttons */
+    .form-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 50px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7E57C2 0%, #673AB7 100%);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(126, 87, 194, 0.4);
+    }
+
+    .btn-secondary {
+      background: #F5F5F5;
+      color: #5D4E6D;
+      border: none;
+    }
+
+    .btn-secondary:hover {
+      background: #EEEEEE;
+    }
+
+    .btn-danger {
+      background: #FFEBEE;
+      color: #E53935;
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background: #FFCDD2;
+    }
+
+    /* Loading */
+    .loading-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      gap: 20px;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #E0E0E0;
+      border-top-color: #7E57C2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: #7E57C2;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    /* Access Denied */
+    .access-denied {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .access-denied-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+    }
+
+    .access-denied-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #5D4E6D;
+      margin-bottom: 10px;
+    }
+
+    .access-denied-text {
+      color: #9E9E9E;
+      margin-bottom: 30px;
+    }
+
+    .back-btn {
+      background: #7E57C2;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-btn:hover {
+      background: #673AB7;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .tabs-nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+      }
+
+      .tab-btn {
+        flex: none;
+        min-width: 100px;
+        padding: 16px 12px;
+      }
+
+      .tab-btn span:not(.tab-icon) {
+        display: none;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .item-card {
+        flex-wrap: wrap;
+      }
+
+      .item-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #E0E0E0;
+      }
+    }
+
+    /* Large touch targets */
+    @media (pointer: coarse) {
+      .tab-btn {
+        min-height: 60px;
+      }
+
+      .action-btn {
+        width: 48px;
+        height: 48px;
+      }
+
+      .add-btn {
+        min-height: 52px;
+        padding: 14px 28px;
+      }
+
+      .btn {
+        min-height: 54px;
+      }
+
+      .checkbox-item {
+        padding: 12px 16px;
+        min-height: 48px;
+      }
+
+      .user-select-item,
+      .task-select-item {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="admin-header">
+    <div class="header-content">
+      <div class="header-title">
+        <span class="header-icon">&#x2699;&#xFE0F;</span>
+        <div class="header-text">
+          <h1>Admin Panel</h1>
+          <span class="subtitle">Manage users, tasks, and routines</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <a href="/family-dashboard.html" class="nav-btn">&#x1F3E0; Family Dashboard</a>
+        <button class="logout-btn" onclick="logout()">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="admin-content">
+    <!-- Loading State -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading admin panel...</div>
+    </div>
+
+    <!-- Access Denied State -->
+    <div id="access-denied" class="access-denied" style="display: none;">
+      <div class="access-denied-icon">&#x1F6AB;</div>
+      <div class="access-denied-title">Parent Access Required</div>
+      <div class="access-denied-text">This page is only available to parents.</div>
+      <a href="/dashboard.html" class="back-btn">Go to My Dashboard</a>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="tabs-container" style="display: none;">
+      <!-- Tabs Navigation -->
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="users" onclick="switchTab('users')">
+          <span class="tab-icon">&#x1F465;</span>
+          <span>Users</span>
+        </button>
+        <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks')">
+          <span class="tab-icon">&#x2705;</span>
+          <span>Tasks</span>
+        </button>
+        <button class="tab-btn" data-tab="routines" onclick="switchTab('routines')">
+          <span class="tab-icon">&#x1F4CB;</span>
+          <span>Routines</span>
+        </button>
+      </div>
+
+      <!-- Users Tab -->
+      <div id="tab-users" class="tab-content active">
+        <div class="section-header">
+          <h2 class="section-title">Family Members</h2>
+          <button class="add-btn" onclick="openUserModal()">
+            <span>+</span>
+            <span>Add User</span>
+          </button>
+        </div>
+        <div id="users-list" class="item-list">
+          <!-- Dynamically populated -->
+        </div>
+        <div id="users-empty" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">&#x1F465;</div>
+          <div class="empty-state-title">No users found</div>
+          <div class="empty-state-text">Add family members to get started.</div>
+        </div>
+      </div>
+
+      <!-- Tasks Tab -->
+      <div id="tab-tasks" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">Tasks</h2>
+          <button class="add-btn" onclick="openTaskModal()">
+            <span>+</span>
+            <span>Add Task</span>
+          </button>
+        </div>
+        <div id="tasks-list" class="item-list">
+          <!-- Dynamically populated -->
+        </div>
+        <div id="tasks-empty" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">&#x2705;</div>
+          <div class="empty-state-title">No tasks found</div>
+          <div class="empty-state-text">Create tasks to assign to family members.</div>
+        </div>
+      </div>
+
+      <!-- Routines Tab -->
+      <div id="tab-routines" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">Routines</h2>
+          <button class="add-btn" onclick="openRoutineModal()">
+            <span>+</span>
+            <span>Add Routine</span>
+          </button>
+        </div>
+        <div id="routines-list" class="item-list">
+          <!-- Dynamically populated -->
+        </div>
+        <div id="routines-empty" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">&#x1F4CB;</div>
+          <div class="empty-state-title">No routines found</div>
+          <div class="empty-state-text">Create routines to group tasks together.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- User Modal -->
+  <div id="user-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="user-modal-title">Add User</h3>
+        <button class="modal-close" onclick="closeUserModal()">&times;</button>
+      </div>
+      <form id="user-form" onsubmit="saveUser(event)">
+        <input type="hidden" id="user-id">
+
+        <div class="form-group">
+          <label class="form-label" for="user-name">Name *</label>
+          <input type="text" id="user-name" class="form-input" required maxlength="255" placeholder="Enter name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="user-role">Role *</label>
+          <select id="user-role" class="form-select" required>
+            <option value="child">Child</option>
+            <option value="parent">Parent</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="user-pin">PIN</label>
+          <input type="text" id="user-pin" class="form-input" pattern="\d{4,6}" placeholder="4-6 digit PIN">
+          <div class="form-hint">Leave empty to remove PIN</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Avatar</label>
+          <div class="avatar-picker" id="avatar-picker">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Modal -->
+  <div id="task-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="task-modal-title">Add Task</h3>
+        <button class="modal-close" onclick="closeTaskModal()">&times;</button>
+      </div>
+      <form id="task-form" onsubmit="saveTask(event)">
+        <input type="hidden" id="task-id">
+
+        <div class="form-group">
+          <label class="form-label" for="task-name">Name *</label>
+          <input type="text" id="task-name" class="form-input" required maxlength="255" placeholder="Enter task name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-type">Type *</label>
+          <select id="task-type" class="form-select" required onchange="toggleDollarValue()">
+            <option value="routine">Routine (daily/scheduled)</option>
+            <option value="bonus">Bonus (extra tasks)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-description">Description</label>
+          <input type="text" id="task-description" class="form-input" placeholder="Optional description">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-icon">Icon</label>
+          <input type="text" id="task-icon" class="form-input" placeholder="Emoji or text icon" maxlength="10">
+        </div>
+
+        <div class="form-group" id="dollar-value-group">
+          <label class="form-label" for="task-dollar-value">Dollar Value</label>
+          <input type="number" id="task-dollar-value" class="form-input" step="0.01" min="0" placeholder="0.00">
+          <div class="form-hint">Required for bonus tasks</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Schedule (days active)</label>
+          <div class="checkbox-group" id="schedule-days">
+            <label class="checkbox-item" data-day="0"><input type="checkbox" value="0"><span>Sun</span></label>
+            <label class="checkbox-item" data-day="1"><input type="checkbox" value="1"><span>Mon</span></label>
+            <label class="checkbox-item" data-day="2"><input type="checkbox" value="2"><span>Tue</span></label>
+            <label class="checkbox-item" data-day="3"><input type="checkbox" value="3"><span>Wed</span></label>
+            <label class="checkbox-item" data-day="4"><input type="checkbox" value="4"><span>Thu</span></label>
+            <label class="checkbox-item" data-day="5"><input type="checkbox" value="5"><span>Fri</span></label>
+            <label class="checkbox-item" data-day="6"><input type="checkbox" value="6"><span>Sat</span></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Assign to Users</label>
+          <div class="user-select-list" id="task-user-select">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Routine Modal -->
+  <div id="routine-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="routine-modal-title">Add Routine</h3>
+        <button class="modal-close" onclick="closeRoutineModal()">&times;</button>
+      </div>
+      <form id="routine-form" onsubmit="saveRoutine(event)">
+        <input type="hidden" id="routine-id">
+
+        <div class="form-group">
+          <label class="form-label" for="routine-name">Name *</label>
+          <input type="text" id="routine-name" class="form-input" required maxlength="255" placeholder="e.g., Morning Routine">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="routine-user">Assign to User *</label>
+          <select id="routine-user" class="form-select" required>
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tasks in Routine</label>
+          <div class="task-select-list" id="routine-task-select">
+            <!-- Dynamically populated -->
+          </div>
+          <div class="form-hint">Select tasks to include in this routine</div>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" class="btn btn-secondary" onclick="closeRoutineModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Delete</h3>
+        <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+      </div>
+      <p id="delete-message" style="margin-bottom: 24px; color: #5D4E6D;"></p>
+      <div class="form-buttons">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    var users = [];
+    var tasks = [];
+    var routines = [];
+    var currentUser = null;
+
+    // Avatar options
+    var avatarOptions = [
+      { emoji: '\u{1F466}', color: '#BBDEFB' },
+      { emoji: '\u{1F467}', color: '#F8BBD9' },
+      { emoji: '\u{1F468}', color: '#C8E6C9' },
+      { emoji: '\u{1F469}', color: '#FFE0B2' },
+      { emoji: '\u{1F476}', color: '#E1BEE7' },
+      { emoji: '\u{1F9D1}', color: '#B2DFDB' },
+      { emoji: '\u{1F431}', color: '#FFCCBC' },
+      { emoji: '\u{1F436}', color: '#D7CCC8' },
+      { emoji: '\u{1F98A}', color: '#FFE082' },
+      { emoji: '\u{1F430}', color: '#F8BBD9' },
+      { emoji: '\u{1F981}', color: '#FFCC80' },
+      { emoji: '\u{1F43C}', color: '#CFD8DC' }
+    ];
+
+    var selectedAvatar = avatarOptions[0];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      var token = localStorage.getItem('token');
+      var userData = localStorage.getItem('user');
+
+      if (!token || !userData) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        currentUser = JSON.parse(userData);
+
+        if (currentUser.role !== 'parent') {
+          showAccessDenied();
+          return;
+        }
+
+        initAvatarPicker();
+        initCheckboxes();
+        loadData();
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        logout();
+      }
+    });
+
+    // Show access denied
+    function showAccessDenied() {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('access-denied').style.display = 'block';
+    }
+
+    // Initialize avatar picker
+    function initAvatarPicker() {
+      var picker = document.getElementById('avatar-picker');
+      while (picker.firstChild) picker.removeChild(picker.firstChild);
+
+      avatarOptions.forEach(function(avatar, index) {
+        var option = document.createElement('div');
+        option.className = 'avatar-option' + (index === 0 ? ' selected' : '');
+        option.style.backgroundColor = avatar.color;
+        option.textContent = avatar.emoji;
+        option.onclick = function() {
+          document.querySelectorAll('.avatar-option').forEach(function(el) {
+            el.classList.remove('selected');
+          });
+          option.classList.add('selected');
+          selectedAvatar = avatar;
+        };
+        picker.appendChild(option);
+      });
+    }
+
+    // Initialize checkboxes
+    function initCheckboxes() {
+      document.querySelectorAll('.checkbox-item').forEach(function(item) {
+        var checkbox = item.querySelector('input[type="checkbox"]');
+        item.onclick = function(e) {
+          if (e.target.tagName !== 'INPUT') {
+            checkbox.checked = !checkbox.checked;
+          }
+          item.classList.toggle('checked', checkbox.checked);
+        };
+      });
+    }
+
+    // Load all data
+    async function loadData() {
+      try {
+        var token = localStorage.getItem('token');
+
+        var [usersRes, tasksRes, routinesRes] = await Promise.all([
+          fetch('/api/admin/users', { headers: { 'Authorization': 'Bearer ' + token } }),
+          fetch('/api/admin/tasks', { headers: { 'Authorization': 'Bearer ' + token } }),
+          fetch('/api/admin/routines', { headers: { 'Authorization': 'Bearer ' + token } })
+        ]);
+
+        if (usersRes.status === 401 || tasksRes.status === 401 || routinesRes.status === 401) {
+          logout();
+          return;
+        }
+
+        if (usersRes.status === 403) {
+          showAccessDenied();
+          return;
+        }
+
+        users = await usersRes.json();
+        tasks = await tasksRes.json();
+        routines = await routinesRes.json();
+
+        renderUsers();
+        renderTasks();
+        renderRoutines();
+
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+      } catch (err) {
+        console.error('Error loading data:', err);
+        alert('Failed to load data');
+      }
+    }
+
+    // Switch tabs
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+      });
+      document.querySelectorAll('.tab-content').forEach(function(content) {
+        content.classList.toggle('active', content.id === 'tab-' + tabName);
+      });
+    }
+
+    // ===================
+    // USERS
+    // ===================
+
+    function renderUsers() {
+      var list = document.getElementById('users-list');
+      var empty = document.getElementById('users-empty');
+
+      while (list.firstChild) list.removeChild(list.firstChild);
+
+      if (users.length === 0) {
+        list.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+
+      list.style.display = 'flex';
+      empty.style.display = 'none';
+
+      users.forEach(function(user) {
+        var card = document.createElement('div');
+        card.className = 'item-card';
+
+        var icon = document.createElement('div');
+        icon.className = 'item-icon user';
+        if (user.avatar) {
+          icon.style.background = 'linear-gradient(135deg, ' + user.avatar.color + ' 0%, ' + user.avatar.color + ' 100%)';
+          icon.textContent = user.avatar.emoji || '\u{1F464}';
+        } else {
+          icon.textContent = '\u{1F464}';
+        }
+
+        var info = document.createElement('div');
+        info.className = 'item-info';
+
+        var name = document.createElement('div');
+        name.className = 'item-name';
+        name.textContent = user.name;
+
+        var meta = document.createElement('div');
+        meta.className = 'item-meta';
+
+        var badge = document.createElement('span');
+        badge.className = 'item-badge ' + user.role;
+        badge.textContent = user.role;
+
+        meta.appendChild(badge);
+        info.appendChild(name);
+        info.appendChild(meta);
+
+        var actions = document.createElement('div');
+        actions.className = 'item-actions';
+
+        var editBtn = document.createElement('button');
+        editBtn.className = 'action-btn edit';
+        editBtn.textContent = '\u270F\uFE0F';
+        editBtn.title = 'Edit';
+        editBtn.onclick = function() { openUserModal(user); };
+
+        var deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn delete';
+        deleteBtn.textContent = '\u{1F5D1}\uFE0F';
+        deleteBtn.title = 'Delete';
+        deleteBtn.onclick = function() { confirmDeleteUser(user); };
+
+        // Can't delete yourself
+        if (user.id === currentUser.userId) {
+          deleteBtn.style.opacity = '0.3';
+          deleteBtn.style.cursor = 'not-allowed';
+          deleteBtn.onclick = function() { alert('You cannot delete your own account.'); };
+        }
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        card.appendChild(icon);
+        card.appendChild(info);
+        card.appendChild(actions);
+
+        list.appendChild(card);
+      });
+    }
+
+    function openUserModal(user) {
+      var modal = document.getElementById('user-modal');
+      var title = document.getElementById('user-modal-title');
+
+      if (user) {
+        title.textContent = 'Edit User';
+        document.getElementById('user-id').value = user.id;
+        document.getElementById('user-name').value = user.name;
+        document.getElementById('user-role').value = user.role;
+        document.getElementById('user-pin').value = '';
+
+        // Select avatar
+        selectedAvatar = user.avatar || avatarOptions[0];
+        document.querySelectorAll('.avatar-option').forEach(function(opt, index) {
+          opt.classList.toggle('selected',
+            avatarOptions[index].emoji === selectedAvatar.emoji &&
+            avatarOptions[index].color === selectedAvatar.color
+          );
+        });
+      } else {
+        title.textContent = 'Add User';
+        document.getElementById('user-id').value = '';
+        document.getElementById('user-name').value = '';
+        document.getElementById('user-role').value = 'child';
+        document.getElementById('user-pin').value = '';
+        selectedAvatar = avatarOptions[0];
+        document.querySelectorAll('.avatar-option').forEach(function(opt, index) {
+          opt.classList.toggle('selected', index === 0);
+        });
+      }
+
+      modal.classList.add('visible');
+    }
+
+    function closeUserModal() {
+      document.getElementById('user-modal').classList.remove('visible');
+    }
+
+    async function saveUser(e) {
+      e.preventDefault();
+
+      var id = document.getElementById('user-id').value;
+      var name = document.getElementById('user-name').value.trim();
+      var role = document.getElementById('user-role').value;
+      var pin = document.getElementById('user-pin').value;
+
+      var body = {
+        name: name,
+        role: role,
+        avatar: selectedAvatar
+      };
+
+      if (pin) {
+        body.pin = pin;
+      } else if (id) {
+        body.pin = '';
+      }
+
+      try {
+        var token = localStorage.getItem('token');
+        var url = id ? '/api/admin/users/' + id : '/api/admin/users';
+        var method = id ? 'PUT' : 'POST';
+
+        var response = await fetch(url, {
+          method: method,
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          var err = await response.json();
+          alert('Error: ' + (err.details ? err.details.join(', ') : err.error));
+          return;
+        }
+
+        closeUserModal();
+        await loadData();
+      } catch (err) {
+        console.error('Error saving user:', err);
+        alert('Failed to save user');
+      }
+    }
+
+    function confirmDeleteUser(user) {
+      if (user.id === currentUser.userId) {
+        alert('You cannot delete your own account.');
+        return;
+      }
+
+      document.getElementById('delete-message').textContent =
+        'Are you sure you want to delete "' + user.name + '"? This action cannot be undone.';
+
+      document.getElementById('confirm-delete-btn').onclick = function() {
+        deleteUser(user.id);
+      };
+
+      document.getElementById('delete-modal').classList.add('visible');
+    }
+
+    async function deleteUser(id) {
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('/api/admin/users/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          var err = await response.json();
+          alert('Error: ' + err.error);
+          return;
+        }
+
+        closeDeleteModal();
+        await loadData();
+      } catch (err) {
+        console.error('Error deleting user:', err);
+        alert('Failed to delete user');
+      }
+    }
+
+    // ===================
+    // TASKS
+    // ===================
+
+    function renderTasks() {
+      var list = document.getElementById('tasks-list');
+      var empty = document.getElementById('tasks-empty');
+
+      while (list.firstChild) list.removeChild(list.firstChild);
+
+      if (tasks.length === 0) {
+        list.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+
+      list.style.display = 'flex';
+      empty.style.display = 'none';
+
+      tasks.forEach(function(task) {
+        var card = document.createElement('div');
+        card.className = 'item-card';
+
+        var icon = document.createElement('div');
+        icon.className = 'item-icon task';
+        icon.textContent = task.icon || '\u{2705}';
+
+        var info = document.createElement('div');
+        info.className = 'item-info';
+
+        var name = document.createElement('div');
+        name.className = 'item-name';
+        name.textContent = task.name;
+
+        var meta = document.createElement('div');
+        meta.className = 'item-meta';
+
+        var typeBadge = document.createElement('span');
+        typeBadge.className = 'item-badge ' + task.type + '-type';
+        typeBadge.textContent = task.type;
+        meta.appendChild(typeBadge);
+
+        if (task.dollarValue > 0) {
+          var valueBadge = document.createElement('span');
+          valueBadge.textContent = '$' + task.dollarValue.toFixed(2);
+          meta.appendChild(valueBadge);
+        }
+
+        if (task.schedule && task.schedule.length > 0) {
+          var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          var scheduleText = task.schedule.map(function(d) { return days[d]; }).join(', ');
+          var scheduleSpan = document.createElement('span');
+          scheduleSpan.textContent = scheduleText;
+          meta.appendChild(scheduleSpan);
+        }
+
+        info.appendChild(name);
+        info.appendChild(meta);
+
+        var actions = document.createElement('div');
+        actions.className = 'item-actions';
+
+        var editBtn = document.createElement('button');
+        editBtn.className = 'action-btn edit';
+        editBtn.textContent = '\u270F\uFE0F';
+        editBtn.title = 'Edit';
+        editBtn.onclick = function() { openTaskModal(task); };
+
+        var deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn delete';
+        deleteBtn.textContent = '\u{1F5D1}\uFE0F';
+        deleteBtn.title = 'Delete';
+        deleteBtn.onclick = function() { confirmDeleteTask(task); };
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        card.appendChild(icon);
+        card.appendChild(info);
+        card.appendChild(actions);
+
+        list.appendChild(card);
+      });
+    }
+
+    function openTaskModal(task) {
+      var modal = document.getElementById('task-modal');
+      var title = document.getElementById('task-modal-title');
+
+      // Populate user select
+      var userSelect = document.getElementById('task-user-select');
+      while (userSelect.firstChild) userSelect.removeChild(userSelect.firstChild);
+
+      users.forEach(function(user) {
+        var item = document.createElement('label');
+        item.className = 'user-select-item';
+
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = user.id;
+
+        if (task && task.assignedUsers && task.assignedUsers.includes(user.id)) {
+          checkbox.checked = true;
+          item.classList.add('selected');
+        }
+
+        item.onclick = function(e) {
+          if (e.target.tagName !== 'INPUT') {
+            checkbox.checked = !checkbox.checked;
+          }
+          item.classList.toggle('selected', checkbox.checked);
+        };
+
+        var avatar = document.createElement('div');
+        avatar.className = 'user-select-avatar';
+        if (user.avatar) {
+          avatar.style.backgroundColor = user.avatar.color;
+          avatar.textContent = user.avatar.emoji || '\u{1F464}';
+        } else {
+          avatar.textContent = '\u{1F464}';
+        }
+
+        var nameSpan = document.createElement('span');
+        nameSpan.className = 'user-select-name';
+        nameSpan.textContent = user.name;
+
+        var check = document.createElement('span');
+        check.className = 'user-select-check';
+        check.textContent = '\u{2713}';
+
+        item.appendChild(checkbox);
+        item.appendChild(avatar);
+        item.appendChild(nameSpan);
+        item.appendChild(check);
+        userSelect.appendChild(item);
+      });
+
+      if (task) {
+        title.textContent = 'Edit Task';
+        document.getElementById('task-id').value = task.id;
+        document.getElementById('task-name').value = task.name;
+        document.getElementById('task-type').value = task.type;
+        document.getElementById('task-description').value = task.description || '';
+        document.getElementById('task-icon').value = task.icon || '';
+        document.getElementById('task-dollar-value').value = task.dollarValue || '';
+
+        // Set schedule
+        document.querySelectorAll('#schedule-days .checkbox-item').forEach(function(item) {
+          var checkbox = item.querySelector('input');
+          var day = parseInt(checkbox.value);
+          checkbox.checked = task.schedule && task.schedule.includes(day);
+          item.classList.toggle('checked', checkbox.checked);
+        });
+      } else {
+        title.textContent = 'Add Task';
+        document.getElementById('task-id').value = '';
+        document.getElementById('task-name').value = '';
+        document.getElementById('task-type').value = 'routine';
+        document.getElementById('task-description').value = '';
+        document.getElementById('task-icon').value = '';
+        document.getElementById('task-dollar-value').value = '';
+
+        document.querySelectorAll('#schedule-days .checkbox-item').forEach(function(item) {
+          var checkbox = item.querySelector('input');
+          checkbox.checked = false;
+          item.classList.remove('checked');
+        });
+      }
+
+      toggleDollarValue();
+      modal.classList.add('visible');
+    }
+
+    function closeTaskModal() {
+      document.getElementById('task-modal').classList.remove('visible');
+    }
+
+    function toggleDollarValue() {
+      var type = document.getElementById('task-type').value;
+      var group = document.getElementById('dollar-value-group');
+      var input = document.getElementById('task-dollar-value');
+
+      if (type === 'bonus') {
+        input.required = true;
+      } else {
+        input.required = false;
+      }
+    }
+
+    async function saveTask(e) {
+      e.preventDefault();
+
+      var id = document.getElementById('task-id').value;
+      var name = document.getElementById('task-name').value.trim();
+      var type = document.getElementById('task-type').value;
+      var description = document.getElementById('task-description').value.trim();
+      var taskIcon = document.getElementById('task-icon').value.trim();
+      var dollarValue = document.getElementById('task-dollar-value').value;
+
+      var schedule = [];
+      document.querySelectorAll('#schedule-days input:checked').forEach(function(cb) {
+        schedule.push(parseInt(cb.value));
+      });
+
+      var assignedUsers = [];
+      document.querySelectorAll('#task-user-select input:checked').forEach(function(cb) {
+        assignedUsers.push(cb.value);
+      });
+
+      var body = {
+        name: name,
+        type: type,
+        schedule: schedule,
+        assignedUsers: assignedUsers
+      };
+
+      if (description) body.description = description;
+      if (taskIcon) body.icon = taskIcon;
+      if (dollarValue) body.dollarValue = parseFloat(dollarValue);
+
+      try {
+        var token = localStorage.getItem('token');
+        var url = id ? '/api/admin/tasks/' + id : '/api/admin/tasks';
+        var method = id ? 'PUT' : 'POST';
+
+        var response = await fetch(url, {
+          method: method,
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          var err = await response.json();
+          alert('Error: ' + (err.details ? err.details.join(', ') : err.error));
+          return;
+        }
+
+        closeTaskModal();
+        await loadData();
+      } catch (err) {
+        console.error('Error saving task:', err);
+        alert('Failed to save task');
+      }
+    }
+
+    function confirmDeleteTask(task) {
+      document.getElementById('delete-message').textContent =
+        'Are you sure you want to delete "' + task.name + '"? This action cannot be undone.';
+
+      document.getElementById('confirm-delete-btn').onclick = function() {
+        deleteTask(task.id);
+      };
+
+      document.getElementById('delete-modal').classList.add('visible');
+    }
+
+    async function deleteTask(id) {
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('/api/admin/tasks/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          var err = await response.json();
+          alert('Error: ' + err.error);
+          return;
+        }
+
+        closeDeleteModal();
+        await loadData();
+      } catch (err) {
+        console.error('Error deleting task:', err);
+        alert('Failed to delete task');
+      }
+    }
+
+    // ===================
+    // ROUTINES
+    // ===================
+
+    function renderRoutines() {
+      var list = document.getElementById('routines-list');
+      var empty = document.getElementById('routines-empty');
+
+      while (list.firstChild) list.removeChild(list.firstChild);
+
+      if (routines.length === 0) {
+        list.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+
+      list.style.display = 'flex';
+      empty.style.display = 'none';
+
+      routines.forEach(function(routine) {
+        var card = document.createElement('div');
+        card.className = 'item-card';
+        card.style.flexDirection = 'column';
+        card.style.alignItems = 'stretch';
+
+        var header = document.createElement('div');
+        header.style.display = 'flex';
+        header.style.alignItems = 'center';
+        header.style.gap = '16px';
+
+        var icon = document.createElement('div');
+        icon.className = 'item-icon routine';
+        icon.textContent = '\u{1F4CB}';
+
+        var info = document.createElement('div');
+        info.className = 'item-info';
+
+        var name = document.createElement('div');
+        name.className = 'item-name';
+        name.textContent = routine.name;
+
+        var meta = document.createElement('div');
+        meta.className = 'item-meta';
+
+        var assignedUser = users.find(function(u) { return u.id === routine.assignedUserId; });
+        if (assignedUser) {
+          var userSpan = document.createElement('span');
+          userSpan.textContent = 'Assigned to: ' + assignedUser.name;
+          meta.appendChild(userSpan);
+        }
+
+        var taskCount = document.createElement('span');
+        taskCount.textContent = (routine.tasks ? routine.tasks.length : 0) + ' tasks';
+        meta.appendChild(taskCount);
+
+        info.appendChild(name);
+        info.appendChild(meta);
+
+        var actions = document.createElement('div');
+        actions.className = 'item-actions';
+
+        var editBtn = document.createElement('button');
+        editBtn.className = 'action-btn edit';
+        editBtn.textContent = '\u270F\uFE0F';
+        editBtn.title = 'Edit';
+        editBtn.onclick = function() { openRoutineModal(routine); };
+
+        var deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn delete';
+        deleteBtn.textContent = '\u{1F5D1}\uFE0F';
+        deleteBtn.title = 'Delete';
+        deleteBtn.onclick = function() { confirmDeleteRoutine(routine); };
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        header.appendChild(icon);
+        header.appendChild(info);
+        header.appendChild(actions);
+
+        card.appendChild(header);
+
+        // Show tasks
+        if (routine.tasks && routine.tasks.length > 0) {
+          var tasksSection = document.createElement('div');
+          tasksSection.className = 'routine-tasks';
+
+          var tasksTitle = document.createElement('div');
+          tasksTitle.className = 'routine-tasks-title';
+          tasksTitle.textContent = 'Tasks in this routine:';
+
+          var tasksList = document.createElement('div');
+          tasksList.className = 'routine-task-list';
+
+          routine.tasks.forEach(function(task) {
+            var chip = document.createElement('div');
+            chip.className = 'routine-task-chip';
+
+            var chipIcon = document.createElement('span');
+            chipIcon.className = 'chip-icon';
+            chipIcon.textContent = task.icon || '\u{2705}';
+
+            chip.appendChild(chipIcon);
+            chip.appendChild(document.createTextNode(task.name));
+            tasksList.appendChild(chip);
+          });
+
+          tasksSection.appendChild(tasksTitle);
+          tasksSection.appendChild(tasksList);
+          card.appendChild(tasksSection);
+        }
+
+        list.appendChild(card);
+      });
+    }
+
+    function openRoutineModal(routine) {
+      var modal = document.getElementById('routine-modal');
+      var title = document.getElementById('routine-modal-title');
+
+      // Populate user select
+      var userSelect = document.getElementById('routine-user');
+      while (userSelect.firstChild) userSelect.removeChild(userSelect.firstChild);
+
+      users.forEach(function(user) {
+        var option = document.createElement('option');
+        option.value = user.id;
+        option.textContent = user.name + ' (' + user.role + ')';
+        userSelect.appendChild(option);
+      });
+
+      // Populate task select
+      var taskSelect = document.getElementById('routine-task-select');
+      while (taskSelect.firstChild) taskSelect.removeChild(taskSelect.firstChild);
+
+      tasks.forEach(function(task) {
+        var item = document.createElement('label');
+        item.className = 'task-select-item';
+
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = task.id;
+
+        if (routine && routine.tasks) {
+          var isIncluded = routine.tasks.some(function(t) { return t.id === task.id; });
+          if (isIncluded) {
+            checkbox.checked = true;
+            item.classList.add('selected');
+          }
+        }
+
+        item.onclick = function(e) {
+          if (e.target.tagName !== 'INPUT') {
+            checkbox.checked = !checkbox.checked;
+          }
+          item.classList.toggle('selected', checkbox.checked);
+        };
+
+        var iconSpan = document.createElement('span');
+        iconSpan.className = 'task-select-icon';
+        iconSpan.textContent = task.icon || '\u{2705}';
+
+        var nameSpan = document.createElement('span');
+        nameSpan.className = 'task-select-name';
+        nameSpan.textContent = task.name;
+
+        var check = document.createElement('span');
+        check.className = 'task-select-check';
+        check.textContent = '\u{2713}';
+
+        item.appendChild(checkbox);
+        item.appendChild(iconSpan);
+        item.appendChild(nameSpan);
+        item.appendChild(check);
+        taskSelect.appendChild(item);
+      });
+
+      if (routine) {
+        title.textContent = 'Edit Routine';
+        document.getElementById('routine-id').value = routine.id;
+        document.getElementById('routine-name').value = routine.name;
+        document.getElementById('routine-user').value = routine.assignedUserId;
+      } else {
+        title.textContent = 'Add Routine';
+        document.getElementById('routine-id').value = '';
+        document.getElementById('routine-name').value = '';
+        if (users.length > 0) {
+          document.getElementById('routine-user').value = users[0].id;
+        }
+      }
+
+      modal.classList.add('visible');
+    }
+
+    function closeRoutineModal() {
+      document.getElementById('routine-modal').classList.remove('visible');
+    }
+
+    async function saveRoutine(e) {
+      e.preventDefault();
+
+      var id = document.getElementById('routine-id').value;
+      var name = document.getElementById('routine-name').value.trim();
+      var assignedUserId = document.getElementById('routine-user').value;
+
+      var selectedTasks = [];
+      document.querySelectorAll('#routine-task-select input:checked').forEach(function(cb, index) {
+        selectedTasks.push({ taskId: cb.value, position: index });
+      });
+
+      var body = {
+        name: name,
+        assignedUserId: assignedUserId
+      };
+
+      if (!id) {
+        body.tasks = selectedTasks;
+      }
+
+      try {
+        var token = localStorage.getItem('token');
+        var url = id ? '/api/admin/routines/' + id : '/api/admin/routines';
+        var method = id ? 'PUT' : 'POST';
+
+        var response = await fetch(url, {
+          method: method,
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          var err = await response.json();
+          alert('Error: ' + (err.details ? err.details.join(', ') : err.error));
+          return;
+        }
+
+        // If editing, update tasks separately
+        if (id) {
+          var routine = routines.find(function(r) { return r.id === id; });
+          var existingTaskIds = routine.tasks ? routine.tasks.map(function(t) { return t.id; }) : [];
+          var newTaskIds = selectedTasks.map(function(t) { return t.taskId; });
+
+          // Remove tasks not in selection
+          for (var i = 0; i < existingTaskIds.length; i++) {
+            var tid = existingTaskIds[i];
+            if (!newTaskIds.includes(tid)) {
+              await fetch('/api/admin/routines/' + id + '/tasks/' + tid, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+              });
+            }
+          }
+
+          // Add new tasks
+          for (var j = 0; j < selectedTasks.length; j++) {
+            var st = selectedTasks[j];
+            if (!existingTaskIds.includes(st.taskId)) {
+              await fetch('/api/admin/routines/' + id + '/tasks', {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + token,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ taskId: st.taskId, position: st.position })
+              });
+            }
+          }
+
+          // Reorder
+          if (newTaskIds.length > 0) {
+            await fetch('/api/admin/routines/' + id + '/tasks/reorder', {
+              method: 'PUT',
+              headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ taskOrder: newTaskIds })
+            });
+          }
+        }
+
+        closeRoutineModal();
+        await loadData();
+      } catch (err) {
+        console.error('Error saving routine:', err);
+        alert('Failed to save routine');
+      }
+    }
+
+    function confirmDeleteRoutine(routine) {
+      document.getElementById('delete-message').textContent =
+        'Are you sure you want to delete "' + routine.name + '"? This action cannot be undone.';
+
+      document.getElementById('confirm-delete-btn').onclick = function() {
+        deleteRoutine(routine.id);
+      };
+
+      document.getElementById('delete-modal').classList.add('visible');
+    }
+
+    async function deleteRoutine(id) {
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('/api/admin/routines/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          var err = await response.json();
+          alert('Error: ' + err.error);
+          return;
+        }
+
+        closeDeleteModal();
+        await loadData();
+      } catch (err) {
+        console.error('Error deleting routine:', err);
+        alert('Failed to delete routine');
+      }
+    }
+
+    // ===================
+    // COMMON
+    // ===================
+
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').classList.remove('visible');
+    }
+
+    // Close modals when clicking overlay
+    document.querySelectorAll('.modal-overlay').forEach(function(modal) {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('visible');
+        }
+      });
+    });
+
+    // Close modals with escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.visible').forEach(function(modal) {
+          modal.classList.remove('visible');
+        });
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>

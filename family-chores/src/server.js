@@ -12,8 +12,11 @@ const dashboardRoutes = require('./routes/dashboard');
 const balanceRoutes = require('./routes/balance');
 const familyRoutes = require('./routes/family');
 const notificationRoutes = require('./routes/notifications');
+const adminRoutes = require('./routes/admin');
 const { startStreakCalculator } = require('./jobs/streakCalculator');
 const { getStats: getCacheStats } = require('./middleware/cache');
+const { generalLimiter, authLimiter, onboardingLimiter } = require('./middleware/rateLimit');
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +44,18 @@ app.use(compression({
 
 // JSON body parser
 app.use(express.json());
+
+// Trust proxy for accurate IP addresses (needed for rate limiting behind reverse proxy)
+app.set('trust proxy', 1);
+
+// General rate limiting for all API routes
+app.use('/api/', generalLimiter);
+
+// Stricter rate limiting for authentication endpoints
+app.use('/api/auth/login', authLimiter);
+
+// Rate limiting for onboarding endpoints
+app.use('/api/onboarding/', onboardingLimiter);
 
 // Static file serving for frontend
 app.use(express.static(path.join(__dirname, 'public')));
@@ -97,19 +112,14 @@ app.use(familyRoutes);
 // Notification routes
 app.use(notificationRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
+// Admin routes
+app.use(adminRoutes);
 
-// 404 handler for API routes
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
+// 404 handler for API routes (must be before error handler)
+app.use('/api/*', notFoundHandler);
+
+// Global error handling middleware (must be last)
+app.use(errorHandler);
 
 // Initialize database and start server
 async function start() {
