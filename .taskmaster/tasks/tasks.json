@@ -1,0 +1,215 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 16,
+        "title": "Create Home Assistant Custom Component Structure",
+        "description": "Set up the basic folder structure and manifest.json for the Family Household Manager custom component following HA best practices.",
+        "details": "Create custom_components/family_chores/ directory with manifest.json containing domain: 'family_chores', name: 'Family Household Manager', version: '1.0.0', requirements: ['psycopg2-binary'], documentation: 'https://github.com/...'. Add __init__.py with DOMAIN = 'family_chores' and basic setup() function returning True.",
+        "testStrategy": "Verify component loads without errors in HA dev environment. Check logs for successful initialization. Test configuration.yaml entry: family_chores: {}",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Configure PostgreSQL Database Connection",
+        "description": "Implement PostgreSQL database initialization and connection pooling for persistent data storage.",
+        "details": "In __init__.py, add async setup with hass.data[DOMAIN] = {} storing DB connection. Use psycopg2-binary with connection string from config (host, port, dbname, user, password). Create connection pool with max_connections=20. Implement async context manager for queries.",
+        "testStrategy": "Test DB connection establishment. Verify connection pool creates/releases connections properly. Test basic INSERT/SELECT operations.",
+        "priority": "high",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Implement Household and User Data Models",
+        "description": "Create database tables for Household, Users with roles, PINs, and avatars per PRD data model.",
+        "details": "Create tables: households(id, name), users(id, household_id, name, role ENUM('admin','child'), pin_hash, avatar_url). Use bcrypt for PIN hashing (4-6 digits). Add indexes on household_id, role. Implement create_household() and create_user() functions with avatar selection from predefined set.",
+        "testStrategy": "Test table creation/migration. Verify PIN hashing rounds trip correctly. Test household/user CRUD operations with foreign key constraints.",
+        "priority": "high",
+        "dependencies": [
+          17
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Build RESTful API Endpoints - Authentication",
+        "description": "Implement PIN-based authentication API endpoint for family member login.",
+        "details": "Add /api/family_chores/auth/login POST endpoint. Validate PIN against bcrypt hash. Return JWT token with user_id, role, household_id. Use 15min expiry. Implement token validation middleware for protected routes.",
+        "testStrategy": "Test valid/invalid PIN login. Verify JWT payload contents. Test token expiry and refresh. Test role-based access control.",
+        "priority": "high",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Develop Task and Routine Database Models",
+        "description": "Create Tasks and Routines tables with scheduling, assignment, and monetary value support.",
+        "details": "Tables: tasks(id, household_id, name, description, icon, type ENUM('routine','bonus'), dollar_value, schedule JSONB {days:[]}, time_window), routines(id, household_id, name, user_id, task_order JSONB). Support shared tasks via user_assignments junction table.",
+        "testStrategy": "Test task/routine CRUD. Verify schedule parsing for daily/weekdays. Test monetary value validation (>0 for bonus). Test routine task ordering.",
+        "priority": "high",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Implement Task Completion Tracking",
+        "description": "Create Completions table and API for marking tasks complete with timestamp and undo capability.",
+        "details": "Table: completions(id, task_id, user_id, completed_at TIMESTAMP, date DATE). API: POST /api/family_chores/tasks/{task_id}/complete, DELETE /api/family_chores/completions/{id} (undo within 5min window). Prevent duplicate completions per day.",
+        "testStrategy": "Test task completion recording. Verify undo works within time window. Test duplicate prevention. Verify date-based uniqueness.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Build Streak Calculation Engine",
+        "description": "Implement streak tracking for consecutive routine completions per user.",
+        "details": "Table: streaks(id, user_id, routine_id, current_count, best_count, last_completed DATE). Function calculate_streak(user_id, routine_id) scans completions backward from today. Update on completion. Support 7/30-day milestone bonuses.",
+        "testStrategy": "Test streak calculation with various completion patterns. Verify milestone detection. Test streak preservation logic. Edge cases: partial weeks, gaps.",
+        "priority": "medium",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Create User Balance and Earnings System",
+        "description": "Track bonus chore earnings and running balances with transaction history.",
+        "details": "Tables: balances(id, user_id, current_balance DECIMAL(10,2), updated_at), transactions(id, user_id, amount DECIMAL(10,2), type ENUM('earn','payout'), task_id, created_at). Update balance on bonus completion.",
+        "testStrategy": "Test earning calculations. Verify balance updates atomically. Test monthly payout tracking. Test negative balance prevention.",
+        "priority": "medium",
+        "dependencies": [
+          21,
+          22
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Develop Child Dashboard API Endpoints",
+        "description": "API for personal dashboard showing user's tasks, streaks, and balance.",
+        "details": "GET /api/family_chores/dashboard/child - returns today's routine tasks, bonus chores, current streak, balance. Filter by user_id from JWT. Include completion status and visual state.",
+        "testStrategy": "Test child view data accuracy. Verify task filtering by schedule. Test streak/balance display. Test different user roles.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Build Family Dashboard API for Parents",
+        "description": "Overview API showing all household members' progress for parent view.",
+        "details": "GET /api/family_chores/dashboard/family - admin-only, returns all users' today's completion status, streaks, missed tasks. Include household summary stats.",
+        "testStrategy": "Test admin-only access control. Verify all users data aggregation. Test missed task detection. Test performance with 10+ users.",
+        "priority": "medium",
+        "dependencies": [
+          24
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Implement Admin CRUD APIs",
+        "description": "Full create/read/update/delete APIs for tasks, routines, users (admin only).",
+        "details": "POST/PUT/DELETE /api/family_chores/tasks, /routines, /users. Role-based access: admin only. Validate all inputs (schedule format, dollar values, etc.). Support bulk operations.",
+        "testStrategy": "Test full CRUD cycles. Verify admin-only access. Test input validation. Test foreign key constraints. Test bulk operations.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Add Vacation Mode and Sick Day Features",
+        "description": "Implement parent controls for pausing routines and excusing absences.",
+        "details": "Add household.vacation_mode BOOLEAN, user.excused_date DATE. Modify task queries to skip excused/vacation days. Preserve streaks during excused periods. API endpoints for toggling.",
+        "testStrategy": "Test vacation mode pauses all tasks. Test sick day excuses individual user. Verify streak protection. Test UI state changes.",
+        "priority": "medium",
+        "dependencies": [
+          26
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Create Frontend Login Screen",
+        "description": "Build tablet-optimized login screen with avatar grid and PIN entry.",
+        "details": "React/Vue single-page app. GET /api/family_chores/users for avatar grid. Large touch targets (64px+). Numpad PIN input. Soft pastel colors, rounded corners. Persist JWT in localStorage.",
+        "testStrategy": "Test responsive design on 10in tablet. Verify touch targets meet 48px min. Test PIN entry flow. Test avatar loading.",
+        "priority": "high",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Develop Child Dashboard Frontend",
+        "description": "Touch-first dashboard with task grid, streak display, balance, bonus board.",
+        "details": "Large grid buttons (64px+). Single-tap completion with checkmark animation. Prominent streak counter. Earnings display. Swipe to bonus chores. Subtle celebratory animations on routine complete.",
+        "testStrategy": "Test touch interactions on tablet. Verify animations smooth (<16ms frames). Test all states (complete/incomplete/overdue). Test offline graceful degradation.",
+        "priority": "high",
+        "dependencies": [
+          24,
+          28
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Build Parent Admin Interface",
+        "description": "Configuration screens for managing users, tasks, routines, vacation mode.",
+        "details": "Tabbed interface: Users, Tasks, Routines, Settings. Drag-drop routine ordering. Schedule picker (days of week). Dollar value inputs. Real-time updates via WebSocket or polling.",
+        "testStrategy": "Test all CRUD flows. Verify real-time updates. Test drag-drop functionality. Test form validation. Test responsive design.",
+        "priority": "medium",
+        "dependencies": [
+          25,
+          26,
+          27,
+          29
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2026-01-28T18:57:08.959Z",
+      "updated": "2026-01-28T18:57:08.959Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
