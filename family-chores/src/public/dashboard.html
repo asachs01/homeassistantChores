@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Chores - Family Household Manager</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #E8F5E9 0%, #F3E5F5 50%, #E3F2FD 100%);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* Header */
+    .dashboard-header {
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-greeting {
+      font-size: 0.9rem;
+      color: #9E9E9E;
+    }
+
+    .user-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #5D4E6D;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #F8F9FA 0%, #FFFFFF 100%);
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-icon {
+      font-size: 28px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #5D4E6D;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #9E9E9E;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .streak-stat {
+      background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    }
+
+    .streak-stat .stat-value {
+      color: #E65100;
+    }
+
+    .balance-stat {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+    }
+
+    .balance-stat .stat-value {
+      color: #2E7D32;
+    }
+
+    /* Main Content */
+    .dashboard-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    /* Progress Bar */
+    .progress-section {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .progress-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #5D4E6D;
+    }
+
+    .progress-text {
+      font-size: 1rem;
+      color: #7E57C2;
+      font-weight: 600;
+    }
+
+    .progress-bar-container {
+      height: 20px;
+      background: #E0E0E0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #81C784 0%, #66BB6A 100%);
+      border-radius: 10px;
+      transition: width 0.5s ease-out;
+      position: relative;
+    }
+
+    .progress-bar.complete {
+      background: linear-gradient(90deg, #FFD54F 0%, #FFCA28 100%);
+    }
+
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-icon {
+      font-size: 28px;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #5D4E6D;
+    }
+
+    /* Task Cards */
+    .tasks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .task-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      border: 3px solid transparent;
+    }
+
+    .task-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .task-card:active {
+      transform: scale(0.98);
+    }
+
+    .task-card.completed {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      border-color: #81C784;
+    }
+
+    .task-card.completed .task-icon {
+      opacity: 0.6;
+    }
+
+    .task-card.claimed {
+      background: #F5F5F5;
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .task-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+
+    .task-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+      flex-shrink: 0;
+    }
+
+    .task-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      margin-bottom: 4px;
+      word-wrap: break-word;
+    }
+
+    .task-description {
+      font-size: 0.85rem;
+      color: #9E9E9E;
+      line-height: 1.4;
+    }
+
+    .task-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 12px;
+    }
+
+    .task-value {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2E7D32;
+    }
+
+    .task-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .check-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid #E0E0E0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .task-card.completed .check-circle {
+      background: #81C784;
+      border-color: #81C784;
+      color: white;
+    }
+
+    /* Undo Button */
+    .undo-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+
+    .undo-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .task-card.completed.can-undo .undo-btn {
+      display: block;
+    }
+
+    /* Completion Animation */
+    .task-card.completing {
+      animation: celebrate 0.6s ease-out;
+    }
+
+    @keyframes celebrate {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.05); }
+      50% { transform: scale(0.95); }
+      75% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    /* Confetti Container */
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+      }
+    }
+
+    /* Bonus Section */
+    .bonus-section {
+      margin-top: 40px;
+    }
+
+    .bonus-section .section-header {
+      color: #7E57C2;
+    }
+
+    .task-card.bonus {
+      border-left: 5px solid #FFD54F;
+    }
+
+    .task-card.bonus .task-icon {
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFE082 100%);
+    }
+
+    .claimed-badge {
+      background: #F5F5F5;
+      color: #757575;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Empty States */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+    }
+
+    .empty-state-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      margin-bottom: 8px;
+    }
+
+    .empty-state-text {
+      color: #9E9E9E;
+    }
+
+    /* All Done Celebration */
+    .all-done-banner {
+      background: linear-gradient(135deg, #FFD54F 0%, #FFCA28 100%);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 30px rgba(255, 193, 7, 0.3);
+      display: none;
+    }
+
+    .all-done-banner.visible {
+      display: block;
+      animation: bounce-in 0.5s ease-out;
+    }
+
+    @keyframes bounce-in {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .all-done-icon {
+      font-size: 4rem;
+      margin-bottom: 10px;
+    }
+
+    .all-done-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #5D4E6D;
+      margin-bottom: 8px;
+    }
+
+    .all-done-text {
+      color: #7E57C2;
+      font-size: 1.1rem;
+    }
+
+    /* Loading State */
+    .loading-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 20px;
+    }
+
+    .loading-spinner-large {
+      width: 60px;
+      height: 60px;
+      border: 5px solid #E0E0E0;
+      border-top-color: #7E57C2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: #7E57C2;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    /* Error State */
+    .error-screen {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .error-icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+    }
+
+    .error-message {
+      color: #E53935;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    .retry-btn {
+      background: #7E57C2;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .retry-btn:hover {
+      background: #673AB7;
+    }
+
+    /* Logout Button */
+    .logout-btn {
+      background: none;
+      border: 2px solid #E0E0E0;
+      color: #9E9E9E;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      border-color: #E53935;
+      color: #E53935;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .header-stats {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .stat-item {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 15px;
+      }
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 26px;
+      }
+
+      .user-name {
+        font-size: 1.2rem;
+      }
+
+      .tasks-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .task-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 28px;
+      }
+    }
+
+    /* Landscape tablet optimization */
+    @media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+      .tasks-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dashboard-content {
+        padding: 20px 30px;
+      }
+
+      .header-content {
+        padding: 0 10px;
+      }
+    }
+
+    /* Large touch targets for accessibility */
+    @media (pointer: coarse) {
+      .task-card {
+        min-height: 160px;
+      }
+
+      .check-circle {
+        width: 48px;
+        height: 48px;
+      }
+
+      .undo-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Confetti Container -->
+  <div id="confetti-container" class="confetti-container"></div>
+
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar"></div>
+        <div class="user-details">
+          <span class="user-greeting">Good <span id="greeting-time">morning</span>,</span>
+          <span class="user-name" id="user-name">Loading...</span>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-item streak-stat">
+          <span class="stat-icon" id="streak-icon">&#x1F525;</span>
+          <div>
+            <div class="stat-value" id="streak-count">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+
+        <div class="stat-item balance-stat">
+          <span class="stat-icon">&#x1F4B0;</span>
+          <div>
+            <div class="stat-value" id="balance-value">$0.00</div>
+            <div class="stat-label">Balance</div>
+          </div>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard-content">
+    <!-- Loading State -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-spinner-large"></div>
+      <div class="loading-text">Loading your chores...</div>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-screen" class="error-screen" style="display: none;">
+      <div class="error-icon">&#x1F615;</div>
+      <div class="error-message" id="error-message">Something went wrong</div>
+      <button class="retry-btn" onclick="loadDashboard()">Try Again</button>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard-main" style="display: none;">
+      <!-- All Done Banner -->
+      <div id="all-done-banner" class="all-done-banner">
+        <div class="all-done-icon">&#x1F389;</div>
+        <div class="all-done-title">Amazing Job!</div>
+        <div class="all-done-text">You completed all your chores for today!</div>
+      </div>
+
+      <!-- Progress Section -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-title">Today's Progress</span>
+          <span class="progress-text" id="progress-text">0 of 0 done</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- My Routine Section -->
+      <section class="routine-section">
+        <div class="section-header">
+          <span class="section-icon">&#x1F4CB;</span>
+          <h2 class="section-title">My Routine</h2>
+        </div>
+        <div id="routine-tasks" class="tasks-grid">
+          <!-- Tasks loaded dynamically -->
+        </div>
+        <div id="routine-empty" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">&#x1F3C6;</div>
+          <div class="empty-state-title">No routine tasks today!</div>
+          <div class="empty-state-text">Check back tomorrow for new tasks.</div>
+        </div>
+      </section>
+
+      <!-- Bonus Chores Section -->
+      <section class="bonus-section">
+        <div class="section-header">
+          <span class="section-icon">&#x2B50;</span>
+          <h2 class="section-title">Bonus Chores</h2>
+        </div>
+        <div id="bonus-tasks" class="tasks-grid">
+          <!-- Bonus tasks loaded dynamically -->
+        </div>
+        <div id="bonus-empty" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">&#x1F6AB;</div>
+          <div class="empty-state-title">No bonus chores available</div>
+          <div class="empty-state-text">Extra chores will appear here when available.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // State
+    let dashboardData = null;
+    let user = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check authentication
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+
+      if (!token || !userData) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        user = JSON.parse(userData);
+        updateUserDisplay();
+        updateGreeting();
+        loadDashboard();
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        logout();
+      }
+    });
+
+    // Update user display in header
+    function updateUserDisplay() {
+      if (!user) return;
+
+      const avatar = document.getElementById('user-avatar');
+      const name = document.getElementById('user-name');
+
+      avatar.style.backgroundColor = user.avatarColor || '#E0E0E0';
+      avatar.textContent = user.avatarEmoji || '\u{1F464}';
+      name.textContent = user.name;
+    }
+
+    // Update greeting based on time of day
+    function updateGreeting() {
+      const hour = new Date().getHours();
+      const greetingEl = document.getElementById('greeting-time');
+
+      if (hour < 12) {
+        greetingEl.textContent = 'morning';
+      } else if (hour < 17) {
+        greetingEl.textContent = 'afternoon';
+      } else {
+        greetingEl.textContent = 'evening';
+      }
+    }
+
+    // Load dashboard data
+    async function loadDashboard() {
+      const loadingScreen = document.getElementById('loading-screen');
+      const errorScreen = document.getElementById('error-screen');
+      const mainContent = document.getElementById('dashboard-main');
+
+      loadingScreen.style.display = 'flex';
+      errorScreen.style.display = 'none';
+      mainContent.style.display = 'none';
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/dashboard', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to load dashboard');
+        }
+
+        dashboardData = await response.json();
+        renderDashboard();
+
+        loadingScreen.style.display = 'none';
+        mainContent.style.display = 'block';
+      } catch (err) {
+        console.error('Error loading dashboard:', err);
+        loadingScreen.style.display = 'none';
+        errorScreen.style.display = 'block';
+        document.getElementById('error-message').textContent = err.message || 'Failed to load your chores';
+      }
+    }
+
+    // Render dashboard
+    function renderDashboard() {
+      if (!dashboardData) return;
+
+      // Update stats
+      document.getElementById('streak-count').textContent = dashboardData.streak.count;
+      document.getElementById('balance-value').textContent = dashboardData.balance.formatted;
+
+      // Update streak icon based on count
+      const streakIcon = document.getElementById('streak-icon');
+      if (dashboardData.streak.count >= 7) {
+        streakIcon.textContent = '\u{1F525}\u{1F525}'; // Double fire for 7+ days
+      } else if (dashboardData.streak.count >= 3) {
+        streakIcon.textContent = '\u{1F525}'; // Fire
+      } else {
+        streakIcon.textContent = '\u{2728}'; // Sparkles for starting
+      }
+
+      // Update progress
+      updateProgress();
+
+      // Render routine tasks
+      renderRoutineTasks();
+
+      // Render bonus tasks
+      renderBonusTasks();
+
+      // Show all done banner if complete
+      const allDoneBanner = document.getElementById('all-done-banner');
+      if (dashboardData.progress.total > 0 && dashboardData.streak.routineComplete) {
+        allDoneBanner.classList.add('visible');
+      } else {
+        allDoneBanner.classList.remove('visible');
+      }
+    }
+
+    // Update progress bar
+    function updateProgress() {
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+
+      const completed = dashboardData.progress.completed;
+      const total = dashboardData.progress.total;
+      const percentage = dashboardData.progress.percentage;
+
+      progressText.textContent = completed + ' of ' + total + ' done';
+      progressBar.style.width = percentage + '%';
+
+      if (percentage === 100) {
+        progressBar.classList.add('complete');
+      } else {
+        progressBar.classList.remove('complete');
+      }
+    }
+
+    // Create task card element
+    function createTaskCard(task, isBonus) {
+      var card = document.createElement('div');
+      card.className = 'task-card' + (isBonus ? ' bonus' : '');
+      card.setAttribute('data-task-id', task.id);
+
+      if (task.isCompleted) {
+        card.classList.add('completed');
+        if (task.canUndo) {
+          card.classList.add('can-undo');
+        }
+      }
+
+      if (isBonus && task.isClaimed && !task.isCompleted) {
+        card.classList.add('claimed');
+      }
+
+      // Header
+      var header = document.createElement('div');
+      header.className = 'task-header';
+
+      var icon = document.createElement('div');
+      icon.className = 'task-icon';
+      icon.textContent = task.icon || '\u{2705}';
+
+      var info = document.createElement('div');
+      info.className = 'task-info';
+
+      var name = document.createElement('div');
+      name.className = 'task-name';
+      name.textContent = task.name;
+
+      var desc = document.createElement('div');
+      desc.className = 'task-description';
+      desc.textContent = task.description || '';
+
+      info.appendChild(name);
+      if (task.description) {
+        info.appendChild(desc);
+      }
+
+      header.appendChild(icon);
+      header.appendChild(info);
+
+      // Footer
+      var footer = document.createElement('div');
+      footer.className = 'task-footer';
+
+      var value = document.createElement('div');
+      value.className = 'task-value';
+      if (task.dollarValue > 0) {
+        value.textContent = '$' + task.dollarValue.toFixed(2);
+      }
+
+      var status = document.createElement('div');
+      status.className = 'task-status';
+
+      if (isBonus && task.isClaimed && !task.isCompleted) {
+        var badge = document.createElement('span');
+        badge.className = 'claimed-badge';
+        badge.textContent = 'Claimed by ' + (task.claimedBy || 'someone');
+        status.appendChild(badge);
+      } else {
+        var check = document.createElement('div');
+        check.className = 'check-circle';
+        check.textContent = task.isCompleted ? '\u2713' : '';
+        status.appendChild(check);
+      }
+
+      footer.appendChild(value);
+      footer.appendChild(status);
+
+      // Undo button
+      if (task.isCompleted && task.canUndo) {
+        var undoBtn = document.createElement('button');
+        undoBtn.className = 'undo-btn';
+        undoBtn.textContent = 'Undo';
+        undoBtn.onclick = function(e) {
+          e.stopPropagation();
+          undoCompletion(task.completionId, card);
+        };
+        card.appendChild(undoBtn);
+      }
+
+      card.appendChild(header);
+      card.appendChild(footer);
+
+      // Click handler for completing task
+      if (!task.isCompleted && !(isBonus && task.isClaimed)) {
+        card.onclick = function() {
+          completeTask(task.id, card);
+        };
+      }
+
+      return card;
+    }
+
+    // Render routine tasks
+    function renderRoutineTasks() {
+      var container = document.getElementById('routine-tasks');
+      var emptyState = document.getElementById('routine-empty');
+
+      // Clear existing
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+
+      if (dashboardData.routineTasks.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      container.style.display = 'grid';
+      emptyState.style.display = 'none';
+
+      dashboardData.routineTasks.forEach(function(task) {
+        container.appendChild(createTaskCard(task, false));
+      });
+    }
+
+    // Render bonus tasks
+    function renderBonusTasks() {
+      var container = document.getElementById('bonus-tasks');
+      var emptyState = document.getElementById('bonus-empty');
+
+      // Clear existing
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+
+      if (dashboardData.bonusTasks.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      container.style.display = 'grid';
+      emptyState.style.display = 'none';
+
+      dashboardData.bonusTasks.forEach(function(task) {
+        container.appendChild(createTaskCard(task, true));
+      });
+    }
+
+    // Complete a task
+    async function completeTask(taskId, cardElement) {
+      // Prevent double-clicks
+      if (cardElement.classList.contains('completing')) return;
+
+      cardElement.classList.add('completing');
+
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('/api/dashboard/complete/' + taskId, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        var data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to complete task');
+        }
+
+        // Update UI
+        cardElement.classList.add('completed', 'can-undo');
+
+        // Update check circle
+        var check = cardElement.querySelector('.check-circle');
+        if (check) {
+          check.textContent = '\u2713';
+        }
+
+        // Add undo button
+        var undoBtn = document.createElement('button');
+        undoBtn.className = 'undo-btn';
+        undoBtn.textContent = 'Undo';
+        undoBtn.onclick = function(e) {
+          e.stopPropagation();
+          undoCompletion(data.completion.id, cardElement);
+        };
+        cardElement.appendChild(undoBtn);
+
+        // Remove click handler
+        cardElement.onclick = null;
+
+        // Show confetti
+        showConfetti();
+
+        // Update balance
+        document.getElementById('balance-value').textContent = data.balance.formatted;
+
+        // Update local data and progress
+        updateLocalData(taskId, data.completion);
+
+        // Celebrate if all done
+        setTimeout(function() {
+          cardElement.classList.remove('completing');
+          checkAllDone();
+        }, 600);
+
+      } catch (err) {
+        console.error('Error completing task:', err);
+        cardElement.classList.remove('completing');
+        alert(err.message || 'Failed to complete task');
+      }
+    }
+
+    // Undo a completion
+    async function undoCompletion(completionId, cardElement) {
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('/api/dashboard/undo/' + completionId, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        var data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to undo');
+        }
+
+        // Update UI
+        cardElement.classList.remove('completed', 'can-undo');
+
+        // Update check circle
+        var check = cardElement.querySelector('.check-circle');
+        if (check) {
+          check.textContent = '';
+        }
+
+        // Remove undo button
+        var undoBtn = cardElement.querySelector('.undo-btn');
+        if (undoBtn) {
+          undoBtn.remove();
+        }
+
+        // Update balance
+        document.getElementById('balance-value').textContent = data.balance.formatted;
+
+        // Restore click handler
+        var taskId = cardElement.getAttribute('data-task-id');
+        cardElement.onclick = function() {
+          completeTask(taskId, cardElement);
+        };
+
+        // Update local data
+        updateLocalDataUndo(taskId);
+
+        // Update all done banner
+        checkAllDone();
+
+      } catch (err) {
+        console.error('Error undoing completion:', err);
+        alert(err.message || 'Failed to undo');
+      }
+    }
+
+    // Update local dashboard data after completion
+    function updateLocalData(taskId, completion) {
+      // Update routine tasks
+      var routineTask = dashboardData.routineTasks.find(function(t) { return t.id === taskId; });
+      if (routineTask) {
+        routineTask.isCompleted = true;
+        routineTask.completionId = completion.id;
+        routineTask.completedAt = completion.completedAt;
+        routineTask.canUndo = true;
+      }
+
+      // Update bonus tasks
+      var bonusTask = dashboardData.bonusTasks.find(function(t) { return t.id === taskId; });
+      if (bonusTask) {
+        bonusTask.isCompleted = true;
+        bonusTask.completionId = completion.id;
+        bonusTask.completedAt = completion.completedAt;
+        bonusTask.canUndo = true;
+      }
+
+      // Update progress
+      dashboardData.progress.completed++;
+      dashboardData.progress.percentage = Math.round(
+        (dashboardData.progress.completed / dashboardData.progress.total) * 100
+      );
+      updateProgress();
+    }
+
+    // Update local data after undo
+    function updateLocalDataUndo(taskId) {
+      // Update routine tasks
+      var routineTask = dashboardData.routineTasks.find(function(t) { return t.id === taskId; });
+      if (routineTask) {
+        routineTask.isCompleted = false;
+        routineTask.completionId = null;
+        routineTask.completedAt = null;
+        routineTask.canUndo = false;
+      }
+
+      // Update bonus tasks
+      var bonusTask = dashboardData.bonusTasks.find(function(t) { return t.id === taskId; });
+      if (bonusTask) {
+        bonusTask.isCompleted = false;
+        bonusTask.completionId = null;
+        bonusTask.completedAt = null;
+        bonusTask.canUndo = false;
+      }
+
+      // Update progress
+      dashboardData.progress.completed--;
+      dashboardData.progress.percentage = Math.round(
+        (dashboardData.progress.completed / dashboardData.progress.total) * 100
+      );
+      updateProgress();
+    }
+
+    // Check if all tasks are done
+    function checkAllDone() {
+      var allDoneBanner = document.getElementById('all-done-banner');
+      var allRoutineComplete = dashboardData.routineTasks.every(function(t) { return t.isCompleted; });
+
+      if (dashboardData.routineTasks.length > 0 && allRoutineComplete) {
+        allDoneBanner.classList.add('visible');
+        dashboardData.streak.routineComplete = true;
+      } else {
+        allDoneBanner.classList.remove('visible');
+        dashboardData.streak.routineComplete = false;
+      }
+    }
+
+    // Show confetti animation
+    function showConfetti() {
+      var container = document.getElementById('confetti-container');
+      var colors = ['#FFD54F', '#81C784', '#64B5F6', '#F48FB1', '#BA68C8', '#4DB6AC'];
+
+      for (var i = 0; i < 50; i++) {
+        (function(index) {
+          setTimeout(function() {
+            var confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-10px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            confetti.style.width = (Math.random() * 10 + 5) + 'px';
+            confetti.style.height = (Math.random() * 10 + 5) + 'px';
+            confetti.style.animation = 'confetti-fall ' + (Math.random() * 2 + 1) + 's ease-out forwards';
+
+            container.appendChild(confetti);
+
+            // Remove after animation
+            setTimeout(function() {
+              confetti.remove();
+            }, 3000);
+          }, index * 20);
+        })(i);
+      }
+    }
+
+    // Logout
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>

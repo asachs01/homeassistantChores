@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
 const routineRoutes = require('./routes/routines');
 const onboardingRoutes = require('./routes/onboarding');
+const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,6 +57,9 @@ app.use(routineRoutes);
 
 // Onboarding routes
 app.use(onboardingRoutes);
+
+// Dashboard routes
+app.use(dashboardRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
