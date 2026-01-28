@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const { initialize } = require('./db/init');
+const { testConnection, getPoolStatus } = require('./db/pool');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,7 +29,33 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Family Household Manager running on port ${PORT}`);
+// Database status endpoint
+app.get('/api/db/status', async (req, res) => {
+  const connected = await testConnection();
+  const poolStatus = getPoolStatus();
+
+  res.json({
+    connected,
+    pool: poolStatus,
+    timestamp: new Date().toISOString()
+  });
 });
+
+// Initialize database and start server
+async function start() {
+  try {
+    const dbInitialized = await initialize();
+    if (!dbInitialized) {
+      console.warn('Warning: Database initialization failed, starting without database');
+    }
+
+    app.listen(PORT, () => {
+      console.log(`Family Household Manager running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  }
+}
+
+start();
