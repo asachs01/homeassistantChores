@@ -20,7 +20,7 @@
         "testStrategy": "Unit tests for DB connection, schema creation, basic CRUD operations using Jest. Verify tables exist and constraints work via direct DB queries.",
         "priority": "high",
         "dependencies": [1],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {

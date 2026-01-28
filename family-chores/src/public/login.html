@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Household Manager - Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #E8F5E9 0%, #F3E5F5 50%, #E3F2FD 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #5D4E6D;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    /* User Selection Screen */
+    #user-selection {
+      display: block;
+    }
+
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .user-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 3px solid transparent;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .user-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .user-card:active {
+      transform: scale(0.95);
+    }
+
+    .user-card.selected {
+      border-color: #9575CD;
+      background: #F3E5F5;
+    }
+
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin: 0 auto 10px;
+    }
+
+    .user-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #5D4E6D;
+    }
+
+    /* PIN Entry Screen */
+    #pin-entry {
+      display: none;
+    }
+
+    .back-button {
+      background: none;
+      border: none;
+      color: #7E57C2;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 20px;
+    }
+
+    .back-button:hover {
+      text-decoration: underline;
+    }
+
+    .selected-user {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .selected-user .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+
+    .selected-user .name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #5D4E6D;
+    }
+
+    .pin-display {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .pin-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #E0E0E0;
+      transition: background 0.2s;
+    }
+
+    .pin-dot.filled {
+      background: #7E57C2;
+    }
+
+    .pin-hint {
+      color: #9E9E9E;
+      font-size: 0.9rem;
+    }
+
+    .error-message {
+      color: #E53935;
+      text-align: center;
+      margin-bottom: 15px;
+      min-height: 24px;
+      font-weight: 500;
+    }
+
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    .numpad-btn {
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .numpad-btn:hover {
+      background: #F3E5F5;
+    }
+
+    .numpad-btn:active {
+      transform: scale(0.95);
+      background: #E1BEE7;
+    }
+
+    .numpad-btn.action {
+      background: #F5F5F5;
+      font-size: 1.2rem;
+    }
+
+    .numpad-btn.action:hover {
+      background: #EEEEEE;
+    }
+
+    .numpad-btn.submit {
+      background: #81C784;
+      color: white;
+    }
+
+    .numpad-btn.submit:hover {
+      background: #66BB6A;
+    }
+
+    .numpad-btn.submit:disabled {
+      background: #C8E6C9;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #7E57C2;
+    }
+
+    .loading.visible {
+      display: block;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #9E9E9E;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Family Household Manager</h1>
+
+    <!-- User Selection Screen -->
+    <div id="user-selection">
+      <h2 style="color: #7E57C2; margin-bottom: 20px; text-align: center;">Who's there?</h2>
+      <div id="users-grid" class="users-grid">
+        <!-- Users loaded dynamically -->
+      </div>
+      <div id="loading-users" class="loading visible">Loading users...</div>
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">&#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467;&#x200D;&#x1F466;</div>
+        <p>No users found. Please set up your household first.</p>
+      </div>
+    </div>
+
+    <!-- PIN Entry Screen -->
+    <div id="pin-entry">
+      <button class="back-button" onclick="showUserSelection()">
+        &larr; Back to users
+      </button>
+
+      <div id="selected-user" class="selected-user">
+        <div class="avatar" id="selected-avatar"></div>
+        <div class="name" id="selected-name"></div>
+      </div>
+
+      <div class="pin-display">
+        <div class="pin-dots" id="pin-dots">
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+        </div>
+        <div class="pin-hint">Enter your PIN</div>
+      </div>
+
+      <div id="error-message" class="error-message"></div>
+
+      <div class="numpad">
+        <button class="numpad-btn" onclick="enterDigit('1')">1</button>
+        <button class="numpad-btn" onclick="enterDigit('2')">2</button>
+        <button class="numpad-btn" onclick="enterDigit('3')">3</button>
+        <button class="numpad-btn" onclick="enterDigit('4')">4</button>
+        <button class="numpad-btn" onclick="enterDigit('5')">5</button>
+        <button class="numpad-btn" onclick="enterDigit('6')">6</button>
+        <button class="numpad-btn" onclick="enterDigit('7')">7</button>
+        <button class="numpad-btn" onclick="enterDigit('8')">8</button>
+        <button class="numpad-btn" onclick="enterDigit('9')">9</button>
+        <button class="numpad-btn action" onclick="clearPin()">C</button>
+        <button class="numpad-btn" onclick="enterDigit('0')">0</button>
+        <button class="numpad-btn action" onclick="backspace()">&larr;</button>
+      </div>
+
+      <div id="login-loading" class="loading">Logging in...</div>
+    </div>
+  </div>
+
+  <script>
+    const MIN_PIN_LENGTH = 4;
+    const MAX_PIN_LENGTH = 6;
+
+    let users = [];
+    let selectedUser = null;
+    let pin = '';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUsers();
+    });
+
+    // Load users from API
+    async function loadUsers() {
+      try {
+        const response = await fetch('/api/users');
+        if (!response.ok) throw new Error('Failed to load users');
+
+        users = await response.json();
+
+        document.getElementById('loading-users').classList.remove('visible');
+
+        if (users.length === 0) {
+          document.getElementById('empty-state').style.display = 'block';
+        } else {
+          renderUsers();
+        }
+      } catch (err) {
+        console.error('Error loading users:', err);
+        document.getElementById('loading-users').textContent = 'Error loading users. Please refresh.';
+      }
+    }
+
+    // Create a user card element safely using DOM methods
+    function createUserCard(user) {
+      const card = document.createElement('div');
+      card.className = 'user-card';
+      card.setAttribute('data-user-id', user.id);
+      card.onclick = function() { selectUser(user.id); };
+
+      const avatar = document.createElement('div');
+      avatar.className = 'user-avatar';
+      avatar.style.backgroundColor = user.avatarColor || '#E0E0E0';
+      avatar.textContent = user.avatarEmoji || '\u{1F464}';
+
+      const name = document.createElement('div');
+      name.className = 'user-name';
+      name.textContent = user.name;
+
+      card.appendChild(avatar);
+      card.appendChild(name);
+
+      return card;
+    }
+
+    // Render user cards using safe DOM methods
+    function renderUsers() {
+      const grid = document.getElementById('users-grid');
+      // Clear existing content safely
+      while (grid.firstChild) {
+        grid.removeChild(grid.firstChild);
+      }
+      // Add user cards
+      users.forEach(function(user) {
+        grid.appendChild(createUserCard(user));
+      });
+    }
+
+    // Select a user and show PIN entry
+    function selectUser(userId) {
+      selectedUser = users.find(function(u) { return u.id === userId; });
+      if (!selectedUser) return;
+
+      // Update selected user display using safe DOM methods
+      const avatar = document.getElementById('selected-avatar');
+      const name = document.getElementById('selected-name');
+
+      avatar.style.backgroundColor = selectedUser.avatarColor || '#E0E0E0';
+      avatar.textContent = selectedUser.avatarEmoji || '\u{1F464}';
+      name.textContent = selectedUser.name;
+
+      // Reset PIN and show PIN entry screen
+      clearPin();
+      clearError();
+
+      document.getElementById('user-selection').style.display = 'none';
+      document.getElementById('pin-entry').style.display = 'block';
+    }
+
+    // Show user selection screen
+    function showUserSelection() {
+      selectedUser = null;
+      clearPin();
+      clearError();
+
+      document.getElementById('pin-entry').style.display = 'none';
+      document.getElementById('user-selection').style.display = 'block';
+    }
+
+    // Enter a digit
+    function enterDigit(digit) {
+      if (pin.length >= MAX_PIN_LENGTH) return;
+
+      pin += digit;
+      updatePinDisplay();
+
+      // Auto-submit when PIN reaches valid length
+      if (pin.length >= MIN_PIN_LENGTH) {
+        attemptLogin();
+      }
+    }
+
+    // Backspace
+    function backspace() {
+      if (pin.length > 0) {
+        pin = pin.slice(0, -1);
+        updatePinDisplay();
+        clearError();
+      }
+    }
+
+    // Clear PIN
+    function clearPin() {
+      pin = '';
+      updatePinDisplay();
+    }
+
+    // Update PIN dot display
+    function updatePinDisplay() {
+      const dots = document.querySelectorAll('#pin-dots .pin-dot');
+      dots.forEach(function(dot, index) {
+        dot.classList.toggle('filled', index < pin.length);
+      });
+    }
+
+    // Clear error message
+    function clearError() {
+      document.getElementById('error-message').textContent = '';
+    }
+
+    // Show error message
+    function showError(message) {
+      document.getElementById('error-message').textContent = message;
+    }
+
+    // Attempt login
+    async function attemptLogin() {
+      if (!selectedUser || pin.length < MIN_PIN_LENGTH) return;
+
+      const loadingEl = document.getElementById('login-loading');
+      loadingEl.classList.add('visible');
+      clearError();
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: selectedUser.id,
+            pin: pin
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+
+        // Store token and user info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // Redirect to main app
+        window.location.href = '/';
+
+      } catch (err) {
+        console.error('Login error:', err);
+        showError(err.message || 'Invalid PIN. Please try again.');
+        clearPin();
+      } finally {
+        loadingEl.classList.remove('visible');
+      }
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+      if (document.getElementById('pin-entry').style.display === 'none') return;
+
+      if (e.key >= '0' && e.key <= '9') {
+        enterDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        backspace();
+      } else if (e.key === 'Escape') {
+        showUserSelection();
+      } else if (e.key === 'Delete') {
+        clearPin();
+      }
+    });
+  </script>
+</body>
+</html>

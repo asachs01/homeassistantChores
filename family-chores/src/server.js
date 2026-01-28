@@ -3,6 +3,8 @@ const cors = require('cors');
 const path = require('path');
 const { initialize } = require('./db/init');
 const { testConnection, getPoolStatus } = require('./db/pool');
+const authRoutes = require('./routes/auth');
+const taskRoutes = require('./routes/tasks');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,6 +41,26 @@ app.get('/api/db/status', async (req, res) => {
     pool: poolStatus,
     timestamp: new Date().toISOString()
   });
+});
+
+// Auth routes
+app.use(authRoutes);
+
+// Task routes
+app.use(taskRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: 'Not found' });
 });
 
 // Initialize database and start server
