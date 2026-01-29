@@ -29,8 +29,8 @@ Thumbs.db
 dist/
 build/
 
-# SQLite database
-data/
+# SQLite database (runtime data directory, not src/data)
+/data/
 *.db
 *.db-wal
 *.db-shm
