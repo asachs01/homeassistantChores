@@ -18,7 +18,7 @@ Please be respectful and constructive in all interactions. We're building softwa
 
 2. **Install Node.js dependencies**
    ```bash
-   cd family-chores
+   cd homehero
    npm install
    ```
 

@@ -18,9 +18,9 @@ A self-hosted household management system for families, designed to run as a Hom
 ### Login Screen
 Select your avatar and enter your PIN to log in.
 
-![Login - User Selection](family-chores/docs/screenshots/login-user-selection.png)
+![Login - User Selection](homehero/docs/screenshots/login-user-selection.png)
 
-![Login - PIN Entry](family-chores/docs/screenshots/login-pin-entry.png)
+![Login - PIN Entry](homehero/docs/screenshots/login-pin-entry.png)
 
 ## Installation
 
@@ -93,7 +93,7 @@ The HomeHero provides a RESTful API for all operations. See the [API Documentati
 ## Project Structure
 
 ```
-family-chores/
+homehero/
 ├── src/
 │   ├── server.js          # Express application entry point
 │   ├── auth/              # JWT authentication
