@@ -59,6 +59,12 @@ app.use(express.json());
 // Trust proxy for accurate IP addresses (needed for rate limiting behind reverse proxy)
 app.set('trust proxy', 1);
 
+// Request logging for debugging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // General rate limiting for all API routes
 app.use('/api/', generalLimiter);
 
