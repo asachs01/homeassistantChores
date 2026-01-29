@@ -9,7 +9,6 @@ arch:
   - aarch64
 ingress: true
 ingress_port: 3000
-ingress_stream: true
 panel_icon: "mdi:trophy"
 panel_title: "HomeHero"
 ports:

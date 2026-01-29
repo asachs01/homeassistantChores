@@ -29,5 +29,6 @@ COPY run.sh /
 # Make run script executable
 RUN chmod a+x /run.sh
 
-# Don't set ENTRYPOINT - the Home Assistant base image uses s6-overlay
-# which will automatically run /run.sh as the service script
+# With init: false in config.yaml, we need to specify CMD
+# (s6-overlay is disabled, so we run the script directly)
+CMD ["/run.sh"]
