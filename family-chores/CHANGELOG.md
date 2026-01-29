@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- Remove explicit ENTRYPOINT from Dockerfile to fix s6-overlay initialization error ("s6-envdir: fatal: unable to envdir /run/s6/container_environment")
+- Fix s6-overlay initialization error by using plain bash shebang instead of with-contenv bashio (config has `init: false` which disables s6-overlay)
+- Remove explicit ENTRYPOINT from Dockerfile
 
 ### Added
 - Added build.yaml for Home Assistant local add-on builds
