@@ -155,7 +155,7 @@ async function start() {
     }
 
     app.listen(PORT, () => {
-      console.log(`Family Household Manager running on port ${PORT}`);
+      console.log(`HomeHero running on port ${PORT}`);
     });
   } catch (err) {
     console.error('Failed to start server:', err);

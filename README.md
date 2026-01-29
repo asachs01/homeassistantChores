@@ -1,4 +1,4 @@
-# Family Household Manager
+# HomeHero
 
 A self-hosted household management system for families, designed to run as a Home Assistant add-on. Track chores, routines, earnings, and streaks for family members with a simple, kid-friendly interface.
 
@@ -38,7 +38,7 @@ Select your avatar and enter your PIN to log in.
 
 ### Installing the Add-on
 
-1. Find "Family Household Manager" in the add-on store
+1. Find "HomeHero" in the add-on store
 2. Click **Install**
 3. Wait for the installation to complete
 
@@ -66,7 +66,7 @@ The database is automatically created at `/data/family-chores.db` inside the add
 
 ## API Documentation
 
-The Family Household Manager provides a RESTful API for all operations. See the [API Documentation](docs/API.md) for complete endpoint reference.
+The HomeHero provides a RESTful API for all operations. See the [API Documentation](docs/API.md) for complete endpoint reference.
 
 ### Key Endpoints
 

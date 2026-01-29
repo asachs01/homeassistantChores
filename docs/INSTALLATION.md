@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide walks you through installing the Family Household Manager add-on for Home Assistant.
+This guide walks you through installing the HomeHero add-on for Home Assistant.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ That's it! The add-on is self-contained with an embedded SQLite database - no ex
 1. Navigate to **Settings > Add-ons > Add-on Store**
 2. Click the **three-dot menu** in the top right corner
 3. Select **Repositories**
-4. Add the Family Household Manager repository URL:
+4. Add the HomeHero repository URL:
    ```
    https://github.com/asachs01/homeassistantChores
    ```
@@ -22,7 +22,7 @@ That's it! The add-on is self-contained with an embedded SQLite database - no ex
 
 ## Step 2: Install the Add-on
 
-1. Find **"Family Household Manager"** in the add-on store
+1. Find **"HomeHero"** in the add-on store
 2. Click on it to view details
 3. Click **Install**
 4. Wait for the installation to complete (this may take a few minutes)
@@ -37,9 +37,9 @@ That's it! The add-on is self-contained with an embedded SQLite database - no ex
 
 If the add-on starts successfully, you'll see:
 ```
-[INFO] Starting Family Household Manager...
+[INFO] Starting HomeHero...
 [INFO] Using SQLite database at /data/family-chores.db
-Family Household Manager running on port 3000
+HomeHero running on port 3000
 ```
 
 ## Step 4: Complete Onboarding
@@ -75,7 +75,7 @@ Family Household Manager running on port 3000
 
 ### From Home Assistant Sidebar
 
-If you enabled "Show in sidebar", click **Family Household Manager** in the Home Assistant sidebar.
+If you enabled "Show in sidebar", click **HomeHero** in the Home Assistant sidebar.
 
 ### Direct URL
 
@@ -115,7 +115,7 @@ The SQLite database is stored at `/data/family-chores.db` inside the add-on cont
 
 ### Backing Up Data
 
-The Family Household Manager stores all data in SQLite at `/data/family-chores.db`.
+The HomeHero stores all data in SQLite at `/data/family-chores.db`.
 
 **Using Home Assistant**:
 - Create a full Home Assistant backup
@@ -140,7 +140,7 @@ The SQLite database file can be copied directly while the add-on is stopped.
 When updates are available:
 
 1. Go to **Settings > Add-ons**
-2. Click on **Family Household Manager**
+2. Click on **HomeHero**
 3. Click **Update** if available
 4. The add-on will restart automatically
 
@@ -151,7 +151,7 @@ Database migrations are handled automatically during startup.
 To remove the add-on:
 
 1. Go to **Settings > Add-ons**
-2. Click on **Family Household Manager**
+2. Click on **HomeHero**
 3. Click **Uninstall**
 
 **Note**: Uninstalling removes the database and all data. Create a backup first if you want to preserve your data.
