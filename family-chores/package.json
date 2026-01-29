@@ -9,7 +9,8 @@
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug"
+    "test:debug": "playwright test --debug",
+    "screenshots": "node scripts/generate-screenshots.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
