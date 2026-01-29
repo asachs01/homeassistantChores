@@ -7,6 +7,8 @@
   <!-- Preconnect hints for performance -->
   <link rel="preconnect" href="/api" crossorigin>
   <link rel="dns-prefetch" href="/api">
+  <!-- Ingress support for Home Assistant sidebar -->
+  <script src="/js/ingress.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -667,7 +669,7 @@
 
         if (data.complete) {
           // Already onboarded, redirect to login
-          window.location.href = '/login.html';
+          ingressRedirect('/login.html');
         } else if (data.hasHousehold) {
           // Household exists but onboarding incomplete
           householdId = data.householdId;
@@ -1141,7 +1143,7 @@
 
     // Go to login
     function goToLogin() {
-      window.location.href = '/login.html';
+      ingressRedirect('/login.html');
     }
   </script>
 </body>

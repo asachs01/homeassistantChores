@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Panel - Family Household Manager</title>
+  <!-- Ingress support for Home Assistant sidebar -->
+  <script src="/js/ingress.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -1196,7 +1198,7 @@
       var userData = localStorage.getItem('user');
 
       if (!token || !userData) {
-        window.location.href = '/login.html';
+        ingressRedirect('/login.html');
         return;
       }
 
@@ -2176,7 +2178,7 @@
     function logout() {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login.html';
+      ingressRedirect('/login.html');
     }
   </script>
 </body>

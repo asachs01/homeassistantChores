@@ -7,6 +7,8 @@
   <!-- Preconnect hints for performance -->
   <link rel="preconnect" href="/api" crossorigin>
   <link rel="dns-prefetch" href="/api">
+  <!-- Ingress support for Home Assistant sidebar -->
+  <script src="/js/ingress.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -1037,7 +1039,7 @@
       const userData = localStorage.getItem('user');
 
       if (!token || !userData) {
-        window.location.href = '/login.html';
+        ingressRedirect('/login.html');
         return;
       }
 
@@ -1552,7 +1554,7 @@
     function logout() {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login.html';
+      ingressRedirect('/login.html');
     }
 
     // ========== Notification Functions ==========

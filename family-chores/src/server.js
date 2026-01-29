@@ -21,6 +21,17 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Home Assistant Ingress support
+// Detect and store the ingress base path for frontend redirects
+app.use((req, res, next) => {
+  // X-Ingress-Path header is set by Home Assistant's ingress proxy
+  const ingressPath = req.headers['x-ingress-path'] || '';
+  req.ingressPath = ingressPath;
+  // Make it available to templates/responses
+  res.locals.ingressPath = ingressPath;
+  next();
+});
+
 // CORS middleware configured for Home Assistant integration
 app.use(cors({
   origin: true,
@@ -65,6 +76,14 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString()
+  });
+});
+
+// Ingress info endpoint - returns the base path for frontend redirects
+app.get('/api/ingress-info', (req, res) => {
+  res.json({
+    ingressPath: req.ingressPath || '',
+    isIngress: !!req.headers['x-ingress-path']
   });
 });
 

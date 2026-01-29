@@ -4,62 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Family Household Manager</title>
-  <!-- Preconnect hints for performance -->
-  <link rel="preconnect" href="/api" crossorigin>
-  <link rel="dns-prefetch" href="/api">
-  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#e4e8f0 100%);min-height:100vh;padding:2rem;color:#374151}.container{max-width:800px;margin:0 auto}h1{text-align:center;color:#6366f1;font-size:2.5rem;margin-bottom:2rem;font-weight:600}.card{background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);margin-bottom:1.5rem}.status-card{display:flex;align-items:center;gap:1rem}.status-indicator{width:12px;height:12px;border-radius:50%;background:#d1d5db}.status-indicator.ok{background:#10b981;box-shadow:0 0 8px rgba(16,185,129,.5)}.status-indicator.error{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.5)}.status-text{font-size:1rem;color:#6b7280}.status-text strong{color:#374151}.timestamp{font-size:.875rem;color:#9ca3af;margin-top:.5rem}.welcome-message{text-align:center;color:#6b7280;font-size:1.125rem;line-height:1.75}</style>
+  <!-- Ingress support for Home Assistant sidebar -->
+  <script src="/js/ingress.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #E8F5E9 0%, #F3E5F5 50%, #E3F2FD 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .loading {
+      text-align: center;
+      color: #7E57C2;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #E1BEE7;
+      border-top: 4px solid #7E57C2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Family Household Manager</h1>
-
-    <div class="card">
-      <p class="welcome-message">
-        Welcome to your family's household management hub.<br>
-        Keep track of chores, schedules, and family activities all in one place.
-      </p>
-    </div>
-
-    <div class="card status-card">
-      <div id="status-indicator" class="status-indicator"></div>
-      <div>
-        <p class="status-text">Server Status: <strong id="status-text">Checking...</strong></p>
-        <p id="timestamp" class="timestamp"></p>
-      </div>
-    </div>
+  <div class="loading">
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
 
   <script>
-    async function checkHealth() {
-      const indicator = document.getElementById('status-indicator');
-      const statusText = document.getElementById('status-text');
-      const timestamp = document.getElementById('timestamp');
-
+    async function init() {
+      // Check if onboarding is complete
       try {
-        const response = await fetch('/api/health');
-        const data = await response.json();
+        const statusResponse = await fetch('/api/onboarding/status');
+        const status = await statusResponse.json();
 
-        if (data.status === 'ok') {
-          indicator.classList.remove('error');
-          indicator.classList.add('ok');
-          statusText.textContent = 'Connected';
-          timestamp.textContent = 'Last checked: ' + new Date(data.timestamp).toLocaleString();
-        } else {
-          throw new Error('Unexpected status');
+        if (!status.complete) {
+          // Need to complete onboarding first
+          await ingressRedirect('/onboarding.html');
+          return;
         }
-      } catch (error) {
-        indicator.classList.remove('ok');
-        indicator.classList.add('error');
-        statusText.textContent = 'Disconnected';
-        timestamp.textContent = 'Unable to reach server';
+      } catch (e) {
+        console.error('Failed to check onboarding status:', e);
       }
+
+      // Check if user is logged in
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+
+      if (token && userData) {
+        // Validate token is still good
+        try {
+          const response = await fetch('/api/dashboard', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (response.ok) {
+            const user = JSON.parse(userData);
+            // Redirect based on user role
+            if (user.role === 'parent') {
+              await ingressRedirect('/family-dashboard.html');
+            } else {
+              await ingressRedirect('/dashboard.html');
+            }
+            return;
+          }
+        } catch (e) {
+          console.error('Token validation failed:', e);
+        }
+
+        // Token invalid, clear it
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+
+      // Not logged in, go to login
+      await ingressRedirect('/login.html');
     }
 
-    // Check health on page load
-    checkHealth();
-
-    // Refresh health status every 30 seconds
-    setInterval(checkHealth, 30000);
+    init();
   </script>
 </body>
 </html>
