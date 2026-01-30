@@ -2215,12 +2215,14 @@
         editBtn.className = 'action-btn edit';
         editBtn.textContent = '\u270F\uFE0F';
         editBtn.title = 'Edit';
+        editBtn.setAttribute('aria-label', 'Edit ' + user.name);
         editBtn.onclick = function() { openUserModal(user); };
 
         var deleteBtn = document.createElement('button');
         deleteBtn.className = 'action-btn delete';
         deleteBtn.textContent = '\u{1F5D1}\uFE0F';
         deleteBtn.title = 'Delete';
+        deleteBtn.setAttribute('aria-label', 'Delete ' + user.name);
         deleteBtn.onclick = function() { confirmDeleteUser(user); };
 
         // Can't delete yourself
@@ -2435,12 +2437,14 @@
         editBtn.className = 'action-btn edit';
         editBtn.textContent = '\u270F\uFE0F';
         editBtn.title = 'Edit';
+        editBtn.setAttribute('aria-label', 'Edit ' + task.name);
         editBtn.onclick = function() { openTaskModal(task); };
 
         var deleteBtn = document.createElement('button');
         deleteBtn.className = 'action-btn delete';
         deleteBtn.textContent = '\u{1F5D1}\uFE0F';
         deleteBtn.title = 'Delete';
+        deleteBtn.setAttribute('aria-label', 'Delete ' + task.name);
         deleteBtn.onclick = function() { confirmDeleteTask(task); };
 
         actions.appendChild(editBtn);
@@ -3187,20 +3191,46 @@
     });
 
     // ===================
+    // KEYBOARD ACCESSIBILITY
+    // ===================
+
+    // Keyboard handler for toggle switches (accessibility)
+    function handleToggleKeydown(event, element) {
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        var input = element.querySelector('input');
+        if (input) {
+          input.click();
+        }
+      }
+    }
+
+    // ===================
     // VACATION MODE
     // ===================
 
     function updateVacationModeUI() {
       var toggle = document.getElementById('vacation-mode-toggle');
+      var toggleLabel = toggle ? toggle.closest('.toggle-switch') : null;
       if (household && toggle) {
         toggle.checked = household.vacationMode || false;
+        // Update aria-checked for accessibility
+        if (toggleLabel) {
+          toggleLabel.setAttribute('aria-checked', household.vacationMode ? 'true' : 'false');
+        }
       }
     }
 
     async function toggleVacationMode() {
       var toggle = document.getElementById('vacation-mode-toggle');
+      var toggleLabel = toggle ? toggle.closest('.toggle-switch') : null;
       var statusEl = document.getElementById('vacation-mode-status');
       var enabled = toggle.checked;
+
+      // Update aria-checked for accessibility
+      if (toggleLabel) {
+        toggleLabel.setAttribute('aria-checked', enabled ? 'true' : 'false');
+      }
 
       // Disable toggle while processing
       toggle.disabled = true;
