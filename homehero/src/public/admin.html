@@ -988,6 +988,149 @@
       outline: none;
       border-color: #7E57C2;
     }
+
+    /* Settings Styles */
+    .settings-card {
+      background: #F8F9FA;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .settings-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .settings-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .settings-icon {
+      font-size: 2rem;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .settings-text {
+      flex: 1;
+    }
+
+    .settings-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      margin-bottom: 4px;
+    }
+
+    .settings-description {
+      font-size: 0.9rem;
+      color: #9E9E9E;
+      line-height: 1.4;
+    }
+
+    .settings-control {
+      flex-shrink: 0;
+    }
+
+    .settings-status {
+      margin-top: 12px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .settings-status.success {
+      background: #E8F5E9;
+      color: #388E3C;
+    }
+
+    .settings-status.error {
+      background: #FFEBEE;
+      color: #E53935;
+    }
+
+    .settings-status.info {
+      background: #E3F2FD;
+      color: #1976D2;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 56px;
+      height: 32px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #E0E0E0;
+      transition: 0.3s;
+      border-radius: 32px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: linear-gradient(135deg, #7E57C2 0%, #673AB7 100%);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+
+    .toggle-switch input:disabled + .toggle-slider {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .settings-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+      }
+
+      .settings-control {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1040,6 +1183,10 @@
         <button class="tab-btn" data-tab="routines" onclick="switchTab('routines')">
           <span class="tab-icon">&#x1F4CB;</span>
           <span>Routines</span>
+        </button>
+        <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">
+          <span class="tab-icon">&#x2699;&#xFE0F;</span>
+          <span>Settings</span>
         </button>
       </div>
 
@@ -1097,6 +1244,33 @@
           <div class="empty-state-icon">&#x1F4CB;</div>
           <div class="empty-state-title">No routines found</div>
           <div class="empty-state-text">Create routines to group tasks together.</div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="tab-settings" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">Household Settings</h2>
+        </div>
+
+        <!-- Vacation Mode Setting -->
+        <div class="settings-card">
+          <div class="settings-item">
+            <div class="settings-info">
+              <div class="settings-icon">&#x1F3D6;&#xFE0F;</div>
+              <div class="settings-text">
+                <div class="settings-title">Vacation Mode</div>
+                <div class="settings-description">Pause all routines without breaking streaks. Tasks won't be required while vacation mode is active.</div>
+              </div>
+            </div>
+            <div class="settings-control">
+              <label class="toggle-switch">
+                <input type="checkbox" id="vacation-mode-toggle" onchange="toggleVacationMode()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div id="vacation-mode-status" class="settings-status" style="display: none;"></div>
         </div>
       </div>
     </div>
@@ -1317,6 +1491,7 @@
     var tasks = [];
     var routines = [];
     var currentUser = null;
+    var household = null;
 
     // Avatar options
     var avatarOptions = [
@@ -1413,11 +1588,12 @@
       try {
         var token = localStorage.getItem('token');
 
-        var [usersRes, tasksRes, routinesRes, iconsRes] = await Promise.all([
+        var [usersRes, tasksRes, routinesRes, iconsRes, dashboardRes] = await Promise.all([
           fetch('./api/admin/users', { headers: { 'Authorization': 'Bearer ' + token } }),
           fetch('./api/admin/tasks', { headers: { 'Authorization': 'Bearer ' + token } }),
           fetch('./api/admin/routines', { headers: { 'Authorization': 'Bearer ' + token } }),
-          fetch('./api/task-icons', { headers: { 'Authorization': 'Bearer ' + token } })
+          fetch('./api/task-icons', { headers: { 'Authorization': 'Bearer ' + token } }),
+          fetch('./api/family/dashboard', { headers: { 'Authorization': 'Bearer ' + token } })
         ]);
 
         if (usersRes.status === 401 || tasksRes.status === 401 || routinesRes.status === 401) {
@@ -1437,6 +1613,13 @@
         if (iconsRes.ok) {
           taskIcons = await iconsRes.json();
           renderIconPicker();
+        }
+
+        // Load household info including vacation mode
+        if (dashboardRes.ok) {
+          var dashboardData = await dashboardRes.json();
+          household = dashboardData.household;
+          updateVacationModeUI();
         }
 
         renderUsers();
@@ -2488,6 +2671,87 @@
         });
       }
     });
+
+    // ===================
+    // VACATION MODE
+    // ===================
+
+    function updateVacationModeUI() {
+      var toggle = document.getElementById('vacation-mode-toggle');
+      if (household && toggle) {
+        toggle.checked = household.vacationMode || false;
+      }
+    }
+
+    async function toggleVacationMode() {
+      var toggle = document.getElementById('vacation-mode-toggle');
+      var statusEl = document.getElementById('vacation-mode-status');
+      var enabled = toggle.checked;
+
+      // Disable toggle while processing
+      toggle.disabled = true;
+
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('./api/family/vacation-mode', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ enabled: enabled })
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          var err = await response.json();
+          throw new Error(err.error || 'Failed to update vacation mode');
+        }
+
+        var result = await response.json();
+
+        // Update local state
+        if (household) {
+          household.vacationMode = result.vacationMode;
+        }
+
+        // Show success message
+        statusEl.className = 'settings-status success';
+        statusEl.textContent = result.vacationMode
+          ? 'Vacation mode enabled - routines are paused and streaks are protected.'
+          : 'Vacation mode disabled - routines are active again.';
+        statusEl.style.display = 'block';
+
+        // Hide message after 4 seconds
+        setTimeout(function() {
+          statusEl.style.display = 'none';
+        }, 4000);
+
+      } catch (err) {
+        console.error('Error toggling vacation mode:', err);
+
+        // Revert toggle state
+        toggle.checked = !enabled;
+        if (household) {
+          household.vacationMode = !enabled;
+        }
+
+        // Show error message
+        statusEl.className = 'settings-status error';
+        statusEl.textContent = 'Failed to update vacation mode: ' + err.message;
+        statusEl.style.display = 'block';
+
+        setTimeout(function() {
+          statusEl.style.display = 'none';
+        }, 4000);
+      } finally {
+        toggle.disabled = false;
+      }
+    }
 
     function logout() {
       localStorage.removeItem('token');
