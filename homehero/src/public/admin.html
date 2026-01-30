@@ -349,6 +349,39 @@
       cursor: grabbing;
     }
 
+    .action-btn.sick-day {
+      background: #FFF3E0;
+      color: #F57C00;
+    }
+
+    .action-btn.sick-day:hover {
+      background: #FFE0B2;
+    }
+
+    .action-btn.sick-day:disabled {
+      background: #E8F5E9;
+      color: #4CAF50;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    /* Sick Day Indicator */
+    .sick-day-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      color: #388E3C;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .sick-day-indicator .indicator-icon {
+      font-size: 0.9rem;
+    }
+
     /* Routine Tasks */
     .routine-tasks {
       margin-top: 12px;
@@ -1119,6 +1152,42 @@
       cursor: not-allowed;
     }
 
+    /* Sick Day Modal */
+    .sick-day-info {
+      background: #E3F2FD;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .sick-day-info-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .sick-day-info-text {
+      font-size: 0.9rem;
+      color: #1976D2;
+      line-height: 1.5;
+    }
+
+    .sick-day-warning {
+      background: #FFF3E0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: #E65100;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .sick-day-warning-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
     @media (max-width: 768px) {
       .settings-item {
         flex-direction: column;
@@ -1130,6 +1199,279 @@
         display: flex;
         justify-content: flex-end;
       }
+    }
+
+    /* Payouts Styles */
+    .payout-card {
+      background: #F8F9FA;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .payout-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .payout-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .payout-info {
+      flex: 1;
+    }
+
+    .payout-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      margin-bottom: 4px;
+    }
+
+    .payout-balance {
+      font-size: 0.9rem;
+      color: #9E9E9E;
+    }
+
+    .payout-balance-amount {
+      font-weight: 600;
+      color: #388E3C;
+    }
+
+    .payout-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .payout-stat {
+      background: white;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .payout-stat-label {
+      font-size: 0.75rem;
+      color: #9E9E9E;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .payout-stat-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #5D4E6D;
+    }
+
+    .payout-stat-value.earned {
+      color: #388E3C;
+    }
+
+    .payout-stat-value.spent {
+      color: #E53935;
+    }
+
+    .payout-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .payout-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .payout-btn.primary {
+      background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+      color: white;
+    }
+
+    .payout-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .payout-btn.primary:disabled {
+      background: #E0E0E0;
+      color: #9E9E9E;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .payout-btn.secondary {
+      background: #F5F5F5;
+      color: #5D4E6D;
+    }
+
+    .payout-btn.secondary:hover {
+      background: #EEEEEE;
+    }
+
+    .month-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .month-selector-label {
+      font-size: 0.9rem;
+      color: #9E9E9E;
+    }
+
+    .month-selector select {
+      padding: 10px 16px;
+      border: 2px solid #E0E0E0;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: white;
+      cursor: pointer;
+      min-width: 140px;
+    }
+
+    .month-selector select:focus {
+      outline: none;
+      border-color: #7E57C2;
+    }
+
+    .payout-history {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #E0E0E0;
+    }
+
+    .payout-history-title {
+      font-size: 0.85rem;
+      color: #9E9E9E;
+      margin-bottom: 12px;
+    }
+
+    .payout-history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .payout-history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: white;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .payout-history-date {
+      color: #9E9E9E;
+      flex-shrink: 0;
+    }
+
+    .payout-history-amount {
+      font-weight: 600;
+      color: #E53935;
+      flex-shrink: 0;
+    }
+
+    .payout-history-desc {
+      color: #5D4E6D;
+      flex: 1;
+      margin: 0 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .previous-months {
+      margin-top: 32px;
+    }
+
+    .previous-months-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #5D4E6D;
+      margin-bottom: 16px;
+    }
+
+    .previous-month-card {
+      background: #F8F9FA;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .previous-month-header {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #7E57C2;
+      margin-bottom: 12px;
+    }
+
+    .previous-month-children {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .previous-month-child {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 8px;
+    }
+
+    .previous-month-child-name {
+      font-size: 0.9rem;
+      color: #5D4E6D;
+    }
+
+    .previous-month-child-amount {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #388E3C;
+    }
+
+    .payouts-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9E9E9E;
+    }
+
+    .payouts-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    .payouts-empty-text {
+      font-size: 1rem;
     }
   </style>
 </head>
@@ -1183,6 +1525,10 @@
         <button class="tab-btn" data-tab="routines" onclick="switchTab('routines')">
           <span class="tab-icon">&#x1F4CB;</span>
           <span>Routines</span>
+        </button>
+        <button class="tab-btn" data-tab="payouts" onclick="switchTab('payouts')">
+          <span class="tab-icon">&#x1F4B0;</span>
+          <span>Payouts</span>
         </button>
         <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">
           <span class="tab-icon">&#x2699;&#xFE0F;</span>
@@ -1472,6 +1818,31 @@
     </div>
   </div>
 
+  <!-- Sick Day Modal -->
+  <div id="sick-day-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Mark Sick Day</h3>
+        <button class="modal-close" onclick="closeSickDayModal()">&times;</button>
+      </div>
+      <div class="sick-day-info">
+        <div class="sick-day-info-icon">&#x1F912;</div>
+        <div class="sick-day-info-text">
+          Mark <strong id="sick-day-user-name">this user</strong> as having a sick day today. This will complete all their remaining tasks for today.
+        </div>
+        <div class="sick-day-warning">
+          <span class="sick-day-warning-icon">&#x1F4A1;</span>
+          <span><strong>Streaks are protected!</strong> Sick days count as completed days, so their streak won't be broken. However, they won't earn any money for tasks completed this way.</span>
+        </div>
+      </div>
+      <p id="sick-day-message" style="margin-bottom: 24px; color: #5D4E6D;"></p>
+      <div class="form-buttons">
+        <button type="button" class="btn btn-secondary" onclick="closeSickDayModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirm-sick-day-btn" style="background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);">Mark Sick Day</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Icon Picker Modal -->
   <div id="icon-picker-modal" class="modal-overlay icon-picker-modal">
     <div class="modal-content">
@@ -1492,6 +1863,7 @@
     var routines = [];
     var currentUser = null;
     var household = null;
+    var usersWithSickDay = new Set(); // Track users who have sick days today
 
     // Avatar options
     var avatarOptions = [
@@ -1615,11 +1987,22 @@
           renderIconPicker();
         }
 
-        // Load household info including vacation mode
+        // Load household info including vacation mode and member progress
         if (dashboardRes.ok) {
           var dashboardData = await dashboardRes.json();
           household = dashboardData.household;
           updateVacationModeUI();
+
+          // Track users who have completed all tasks today (includes sick days)
+          usersWithSickDay.clear();
+          if (dashboardData.members) {
+            dashboardData.members.forEach(function(member) {
+              // A user has a "sick day" or is done if all tasks are complete (100%)
+              if (member.role === 'child' && member.progress.total > 0 && member.progress.percentage === 100) {
+                usersWithSickDay.add(member.id);
+              }
+            });
+          }
         }
 
         renderUsers();
@@ -1691,11 +2074,42 @@
         badge.textContent = user.role;
 
         meta.appendChild(badge);
+
+        // Show sick day indicator if user has all tasks complete today
+        if (user.role === 'child' && usersWithSickDay.has(user.id)) {
+          var sickDayIndicator = document.createElement('span');
+          sickDayIndicator.className = 'sick-day-indicator';
+          var indicatorIcon = document.createElement('span');
+          indicatorIcon.className = 'indicator-icon';
+          indicatorIcon.textContent = '\u{2705}';
+          sickDayIndicator.appendChild(indicatorIcon);
+          sickDayIndicator.appendChild(document.createTextNode(' Done today'));
+          sickDayIndicator.title = 'All tasks completed for today';
+          meta.appendChild(sickDayIndicator);
+        }
+
         info.appendChild(name);
         info.appendChild(meta);
 
         var actions = document.createElement('div');
         actions.className = 'item-actions';
+
+        // Add sick day button for children
+        if (user.role === 'child') {
+          var sickDayBtn = document.createElement('button');
+          sickDayBtn.className = 'action-btn sick-day';
+          sickDayBtn.title = usersWithSickDay.has(user.id) ? 'Tasks already completed' : 'Mark sick day';
+
+          if (usersWithSickDay.has(user.id)) {
+            sickDayBtn.textContent = '\u{2705}';
+            sickDayBtn.disabled = true;
+          } else {
+            sickDayBtn.textContent = '\u{1F912}';
+            sickDayBtn.onclick = function() { openSickDayModal(user); };
+          }
+
+          actions.appendChild(sickDayBtn);
+        }
 
         var editBtn = document.createElement('button');
         editBtn.className = 'action-btn edit';
@@ -2750,6 +3164,71 @@
         }, 4000);
       } finally {
         toggle.disabled = false;
+      }
+    }
+
+    // ===================
+    // SICK DAY
+    // ===================
+
+    var pendingSickDayUser = null;
+
+    function openSickDayModal(user) {
+      pendingSickDayUser = user;
+      document.getElementById('sick-day-user-name').textContent = user.name;
+      document.getElementById('sick-day-message').textContent =
+        'Are you sure you want to mark a sick day for ' + user.name + '?';
+      document.getElementById('confirm-sick-day-btn').onclick = function() {
+        markSickDay(user.id);
+      };
+      document.getElementById('sick-day-modal').classList.add('visible');
+    }
+
+    function closeSickDayModal() {
+      document.getElementById('sick-day-modal').classList.remove('visible');
+      pendingSickDayUser = null;
+    }
+
+    async function markSickDay(userId) {
+      var confirmBtn = document.getElementById('confirm-sick-day-btn');
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Processing...';
+
+      try {
+        var token = localStorage.getItem('token');
+        var response = await fetch('./api/family/sick-day/' + userId, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          var err = await response.json();
+          throw new Error(err.error || 'Failed to mark sick day');
+        }
+
+        var result = await response.json();
+
+        // Close modal and reload data
+        closeSickDayModal();
+        await loadData();
+
+        // Show success alert
+        alert(result.message || 'Sick day marked successfully!');
+
+      } catch (err) {
+        console.error('Error marking sick day:', err);
+        alert('Failed to mark sick day: ' + err.message);
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Mark Sick Day';
       }
     }
 

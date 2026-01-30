@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-01-30
 
 ### Added
+- **Sick day button for parents** (`src/public/admin.html`)
+  - Parents can mark a child as having a sick day from the Users tab
+  - Sick day completes all remaining tasks for the day without earning money
+  - Streaks are protected - sick days count as completed days
+  - Visual indicator shows when a child has all tasks done for today
+  - Confirmation modal with help text explaining streak protection
 - **Daily digest notifications for parents** (`src/jobs/dailyDigest.js`)
   - Cron job runs at 7 AM daily
   - Summarizes previous day's activity for each household
