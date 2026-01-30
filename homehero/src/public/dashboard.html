@@ -116,6 +116,46 @@
       color: #E65100;
     }
 
+    .streak-stat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .next-milestone {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+      border-radius: 12px;
+      font-size: 0.8rem;
+      color: #E65100;
+      font-weight: 500;
+    }
+
+    .next-milestone-icon {
+      font-size: 1rem;
+    }
+
+    .next-milestone-text {
+      line-height: 1.3;
+    }
+
+    .next-milestone-days {
+      font-weight: 700;
+    }
+
+    .next-milestone-reward {
+      font-weight: 700;
+      color: #2E7D32;
+    }
+
+    .milestone-complete {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      color: #2E7D32;
+    }
+
     .balance-stat {
       background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
     }
@@ -343,7 +383,17 @@
     }
 
     .task-card.completed.can-undo .undo-btn {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .undo-timer {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 500;
     }
 
     /* Completion Animation */
@@ -807,6 +857,10 @@
       border-left: 4px solid #9E9E9E;
     }
 
+    .toast.undo_available {
+      border-left: 4px solid #7E57C2;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .header-content {
@@ -921,11 +975,17 @@
       </div>
 
       <div class="header-stats">
-        <div class="stat-item streak-stat">
-          <span class="stat-icon" id="streak-icon">&#x1F525;</span>
-          <div>
-            <div class="stat-value" id="streak-count">0</div>
-            <div class="stat-label">Day Streak</div>
+        <div class="streak-stat-container">
+          <div class="stat-item streak-stat">
+            <span class="stat-icon" id="streak-icon">&#x1F525;</span>
+            <div>
+              <div class="stat-value" id="streak-count">0</div>
+              <div class="stat-label">Day Streak</div>
+            </div>
+          </div>
+          <div class="next-milestone" id="next-milestone" style="display: none;">
+            <span class="next-milestone-icon">&#x1F4C8;</span>
+            <span class="next-milestone-text" id="next-milestone-text"></span>
           </div>
         </div>
 
@@ -1032,6 +1092,9 @@
     let dashboardData = null;
     let user = null;
 
+    // Track undo timers for cleanup
+    const undoTimers = new Map(); // completionId -> { intervalId, timeoutId }
+
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
       // Check authentication
@@ -1120,6 +1183,60 @@
       }
     }
 
+    // Milestone configuration (matches src/config/milestones.js)
+    const MILESTONES = [
+      { days: 7, bonus: 1.00, label: '1 Week' },
+      { days: 14, bonus: 2.50, label: '2 Weeks' },
+      { days: 30, bonus: 5.00, label: '1 Month' },
+      { days: 60, bonus: 10.00, label: '2 Months' },
+      { days: 90, bonus: 20.00, label: '3 Months' }
+    ];
+
+    // Get the next milestone after a given day count
+    function getNextMilestone(days) {
+      return MILESTONES.find(function(m) { return m.days > days; }) || null;
+    }
+
+    // Update the next milestone display
+    function updateNextMilestone(currentStreak) {
+      var milestoneEl = document.getElementById('next-milestone');
+      var milestoneText = document.getElementById('next-milestone-text');
+
+      // Clear existing content
+      while (milestoneText.firstChild) {
+        milestoneText.removeChild(milestoneText.firstChild);
+      }
+
+      var nextMilestone = getNextMilestone(currentStreak);
+
+      if (nextMilestone) {
+        var daysRemaining = nextMilestone.days - currentStreak;
+        var rewardFormatted = '$' + nextMilestone.bonus.toFixed(2);
+
+        // Build text safely using DOM elements
+        var daysSpan = document.createElement('span');
+        daysSpan.className = 'next-milestone-days';
+        daysSpan.textContent = daysRemaining;
+
+        var rewardSpan = document.createElement('span');
+        rewardSpan.className = 'next-milestone-reward';
+        rewardSpan.textContent = rewardFormatted;
+
+        milestoneText.appendChild(daysSpan);
+        milestoneText.appendChild(document.createTextNode(' more day' + (daysRemaining !== 1 ? 's' : '') + ' for '));
+        milestoneText.appendChild(rewardSpan);
+        milestoneText.appendChild(document.createTextNode(' bonus!'));
+
+        milestoneEl.classList.remove('milestone-complete');
+        milestoneEl.style.display = 'flex';
+      } else {
+        // User has reached all milestones
+        milestoneText.textContent = 'All milestones reached! \u{1F3C6}';
+        milestoneEl.classList.add('milestone-complete');
+        milestoneEl.style.display = 'flex';
+      }
+    }
+
     // Render dashboard
     function renderDashboard() {
       if (!dashboardData) return;
@@ -1137,6 +1254,9 @@
       } else {
         streakIcon.textContent = '\u{2728}'; // Sparkles for starting
       }
+
+      // Update next milestone display
+      updateNextMilestone(dashboardData.streak.count);
 
       // Update progress
       updateProgress();
@@ -1247,16 +1367,12 @@
       footer.appendChild(value);
       footer.appendChild(status);
 
-      // Undo button
-      if (task.isCompleted && task.canUndo) {
-        var undoBtn = document.createElement('button');
-        undoBtn.className = 'undo-btn';
-        undoBtn.textContent = 'Undo';
-        undoBtn.onclick = function(e) {
-          e.stopPropagation();
-          undoCompletion(task.completionId, card);
-        };
-        card.appendChild(undoBtn);
+      // Undo button with timer
+      if (task.isCompleted && task.canUndo && task.completionId) {
+        var undoBtn = createUndoButton(task.completionId, task.completedAt, card);
+        if (undoBtn) {
+          card.appendChild(undoBtn);
+        }
       }
 
       card.appendChild(header);
@@ -1357,21 +1473,20 @@
           check.textContent = '\u2713';
         }
 
-        // Add undo button
-        var undoBtn = document.createElement('button');
-        undoBtn.className = 'undo-btn';
-        undoBtn.textContent = 'Undo';
-        undoBtn.onclick = function(e) {
-          e.stopPropagation();
-          undoCompletion(data.completion.id, cardElement);
-        };
-        cardElement.appendChild(undoBtn);
+        // Add undo button with timer
+        var undoBtn = createUndoButton(data.completion.id, data.completion.completedAt, cardElement);
+        if (undoBtn) {
+          cardElement.appendChild(undoBtn);
+        }
 
         // Remove click handler
         cardElement.onclick = null;
 
         // Show confetti
         showConfetti();
+
+        // Show undo available toast
+        showUndoToast();
 
         // Update balance
         document.getElementById('balance-value').textContent = data.balance.formatted;
@@ -1414,6 +1529,9 @@
         if (!response.ok) {
           throw new Error(data.error || 'Failed to undo');
         }
+
+        // Clean up timers
+        cleanupUndoTimer(completionId);
 
         // Update UI
         cardElement.classList.remove('completed', 'can-undo');
@@ -1555,6 +1673,126 @@
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       ingressRedirect('/login.html');
+    }
+
+    // ========== Undo Timer Functions ==========
+
+    // Undo window duration (5 minutes in milliseconds)
+    const UNDO_WINDOW_MS = 5 * 60 * 1000;
+
+    // Create undo button with countdown timer
+    function createUndoButton(completionId, completedAt, cardElement) {
+      var completedTime = new Date(completedAt).getTime();
+      var now = Date.now();
+      var elapsed = now - completedTime;
+      var remaining = UNDO_WINDOW_MS - elapsed;
+
+      // If undo window has expired, don't show button
+      if (remaining <= 0) {
+        cardElement.classList.remove('can-undo');
+        return null;
+      }
+
+      var undoBtn = document.createElement('button');
+      undoBtn.className = 'undo-btn';
+      undoBtn.setAttribute('data-completion-id', completionId);
+
+      var undoText = document.createElement('span');
+      undoText.textContent = 'Undo';
+
+      var timerSpan = document.createElement('span');
+      timerSpan.className = 'undo-timer';
+      timerSpan.textContent = formatTimeRemaining(remaining);
+
+      undoBtn.appendChild(undoText);
+      undoBtn.appendChild(timerSpan);
+
+      undoBtn.onclick = function(e) {
+        e.stopPropagation();
+        undoCompletion(completionId, cardElement);
+      };
+
+      // Start countdown timer
+      var intervalId = setInterval(function() {
+        var currentRemaining = UNDO_WINDOW_MS - (Date.now() - completedTime);
+        if (currentRemaining <= 0) {
+          // Time expired - remove button and cleanup
+          cleanupUndoTimer(completionId);
+          cardElement.classList.remove('can-undo');
+          if (undoBtn.parentElement) {
+            undoBtn.remove();
+          }
+          // Update local data
+          var taskId = cardElement.getAttribute('data-task-id');
+          var routineTask = dashboardData.routineTasks.find(function(t) { return t.id === taskId; });
+          if (routineTask) routineTask.canUndo = false;
+          var bonusTask = dashboardData.bonusTasks.find(function(t) { return t.id === taskId; });
+          if (bonusTask) bonusTask.canUndo = false;
+        } else {
+          timerSpan.textContent = formatTimeRemaining(currentRemaining);
+        }
+      }, 1000);
+
+      // Store timer reference for cleanup
+      undoTimers.set(completionId, { intervalId: intervalId });
+
+      return undoBtn;
+    }
+
+    // Format remaining time as M:SS
+    function formatTimeRemaining(ms) {
+      var totalSeconds = Math.ceil(ms / 1000);
+      var minutes = Math.floor(totalSeconds / 60);
+      var seconds = totalSeconds % 60;
+      return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+    }
+
+    // Cleanup undo timer
+    function cleanupUndoTimer(completionId) {
+      var timer = undoTimers.get(completionId);
+      if (timer) {
+        if (timer.intervalId) clearInterval(timer.intervalId);
+        undoTimers.delete(completionId);
+      }
+    }
+
+    // Show undo available toast
+    function showUndoToast() {
+      var container = document.getElementById('toast-container');
+
+      var toast = document.createElement('div');
+      toast.className = 'toast undo_available';
+
+      var icon = document.createElement('span');
+      icon.className = 'toast-icon';
+      icon.textContent = '\u2705';
+
+      var content = document.createElement('div');
+      content.className = 'toast-content';
+
+      var message = document.createElement('div');
+      message.className = 'toast-message';
+      message.textContent = 'Task completed! Undo available for 5 minutes';
+
+      content.appendChild(message);
+
+      var closeBtn = document.createElement('button');
+      closeBtn.className = 'toast-close';
+      closeBtn.textContent = '\u2715';
+      closeBtn.onclick = function() {
+        closeToast(toast);
+      };
+
+      toast.appendChild(icon);
+      toast.appendChild(content);
+      toast.appendChild(closeBtn);
+
+      container.appendChild(toast);
+
+      // Auto-remove after 4 seconds
+      setTimeout(function() {
+        closeToast(toast);
+      }, 4000);
     }
 
     // ========== Notification Functions ==========
