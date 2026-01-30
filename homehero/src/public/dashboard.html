@@ -1039,7 +1039,7 @@
 </head>
 <body>
   <!-- Confetti Container -->
-  <div id="confetti-container" class="confetti-container"></div>
+  <div id="confetti-container" class="confetti-container" aria-hidden="true"></div>
 
   <!-- Toast Container for Notifications -->
   <div id="toast-container" class="toast-container"></div>
@@ -1079,11 +1079,11 @@
         </div>
 
         <div class="notification-wrapper">
-          <button class="notification-bell" id="notification-bell" onclick="toggleNotifications()">
-            &#x1F514;
+          <button class="notification-bell" id="notification-bell" onclick="toggleNotifications()" aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
+            <span aria-hidden="true">&#x1F514;</span>
             <span class="notification-badge hidden" id="notification-badge">0</span>
           </button>
-          <div class="notification-dropdown" id="notification-dropdown">
+          <div class="notification-dropdown" id="notification-dropdown" role="menu">
             <div class="notification-header">
               <span class="notification-title">Notifications</span>
               <button class="mark-all-read" onclick="markAllNotificationsRead()">Mark all read</button>
@@ -2053,12 +2053,15 @@
     // Toggle notification dropdown
     function toggleNotifications() {
       var dropdown = document.getElementById('notification-dropdown');
+      var bell = document.getElementById('notification-bell');
       var isOpen = dropdown.classList.contains('open');
 
       if (isOpen) {
         dropdown.classList.remove('open');
+        bell.setAttribute('aria-expanded', 'false');
       } else {
         dropdown.classList.add('open');
+        bell.setAttribute('aria-expanded', 'true');
         loadNotifications();
       }
     }
@@ -2067,9 +2070,11 @@
     document.addEventListener('click', function(e) {
       var wrapper = document.querySelector('.notification-wrapper');
       var dropdown = document.getElementById('notification-dropdown');
+      var bell = document.getElementById('notification-bell');
 
       if (wrapper && !wrapper.contains(e.target) && dropdown.classList.contains('open')) {
         dropdown.classList.remove('open');
+        bell.setAttribute('aria-expanded', 'false');
       }
     });
 

@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-01-30
 
 ### Added
+- **ARIA labels for accessibility** (`src/public/admin.html`, `src/public/dashboard.html`, `src/public/family-dashboard.html`)
+  - Added `role="tablist"`, `role="tab"`, and `role="tabpanel"` to admin panel tabs for screen reader navigation
+  - Added `aria-selected` state to tab buttons, updated dynamically on tab switch
+  - Added `aria-labelledby` to tab panels referencing their corresponding tab buttons
+  - Added `aria-controls` to tab buttons referencing their corresponding tab panels
+  - Added `aria-label` to all dynamically created edit/delete action buttons with item names (e.g., "Edit John", "Delete Task 1")
+  - Added `aria-label` to sick day buttons with context (e.g., "Mark sick day for Emma")
+  - Added `aria-hidden="true"` to decorative confetti container in dashboard
+  - Added `aria-hidden="true"` to decorative icon spans in admin tabs and family dashboard buttons
+  - Added `aria-label="Notifications"`, `aria-haspopup="true"`, and `aria-expanded` state to notification bell button
+  - Added `role="menu"` to notification dropdown for screen reader context
+  - Dynamic `aria-expanded` state updates on notification dropdown open/close
 - **Reduced motion support for accessibility** (`src/public/dashboard.html`, `src/public/admin.html`)
   - Added `prefers-reduced-motion` media queries to respect user accessibility preferences
   - Disables celebration, confetti, bounce-in, and toast slide animations in dashboard

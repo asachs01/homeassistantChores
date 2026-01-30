@@ -2199,6 +2199,7 @@
           var sickDayBtn = document.createElement('button');
           sickDayBtn.className = 'action-btn sick-day';
           sickDayBtn.title = usersWithSickDay.has(user.id) ? 'Tasks already completed' : 'Mark sick day';
+          sickDayBtn.setAttribute('aria-label', usersWithSickDay.has(user.id) ? 'Tasks already completed for ' + user.name : 'Mark sick day for ' + user.name);
 
           if (usersWithSickDay.has(user.id)) {
             sickDayBtn.textContent = '\u{2705}';
@@ -2824,12 +2825,14 @@
         editBtn.className = 'action-btn edit';
         editBtn.textContent = '\u270F\uFE0F';
         editBtn.title = 'Edit';
+        editBtn.setAttribute('aria-label', 'Edit ' + routine.name);
         editBtn.onclick = function() { openRoutineModal(routine); };
 
         var deleteBtn = document.createElement('button');
         deleteBtn.className = 'action-btn delete';
         deleteBtn.textContent = '\u{1F5D1}\uFE0F';
         deleteBtn.title = 'Delete';
+        deleteBtn.setAttribute('aria-label', 'Delete ' + routine.name);
         deleteBtn.onclick = function() { confirmDeleteRoutine(routine); };
 
         actions.appendChild(editBtn);

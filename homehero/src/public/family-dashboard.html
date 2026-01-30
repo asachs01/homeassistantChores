@@ -1273,9 +1273,11 @@
 
         var sickDayBtn = document.createElement('button');
         sickDayBtn.className = 'action-btn sick-day';
+        sickDayBtn.setAttribute('aria-label', 'Mark sick day for ' + member.name);
 
         var sickIcon = document.createElement('span');
         sickIcon.textContent = '\u{1F912} ';
+        sickIcon.setAttribute('aria-hidden', 'true');
         sickDayBtn.appendChild(sickIcon);
 
         var sickText = document.createTextNode('Mark Sick Day');
