@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.0] - 2026-01-30
 
+### Added
+- **Reduced motion support for accessibility** (`src/public/dashboard.html`, `src/public/admin.html`)
+  - Added `prefers-reduced-motion` media queries to respect user accessibility preferences
+  - Disables celebration, confetti, bounce-in, and toast slide animations in dashboard
+  - Disables modal transitions and button hover transforms in admin panel
+  - Loading spinners use slower 3s rotation instead of being fully disabled
+  - Provides immediate state changes instead of animated transitions for users who prefer reduced motion
+
 ### Changed
 - **Improved color contrast for WCAG AA compliance** (`src/public/admin.html`, `src/public/dashboard.html`, `src/public/family-dashboard.html`, `src/public/login.html`, `src/public/onboarding.html`)
   - Changed secondary text color from `#9E9E9E` (2.8:1 ratio) to `#757575` (4.6:1 ratio)

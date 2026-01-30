@@ -1473,6 +1473,55 @@
     .payouts-empty-text {
       font-size: 1rem;
     }
+
+    /* Reduced motion support for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      /* Disable modal transitions */
+      .modal-overlay {
+        transition: none;
+      }
+
+      .modal-content {
+        transition: none;
+      }
+
+      .modal-overlay.visible .modal-content {
+        transform: scale(1);
+      }
+
+      /* Keep loading spinner but reduce motion - slower rotation */
+      .loading-spinner {
+        animation: spin 3s linear infinite;
+      }
+
+      /* Disable button hover transforms */
+      .add-btn:hover,
+      .btn-primary:hover,
+      .avatar-option:hover,
+      .icon-option:hover {
+        transform: none;
+      }
+
+      /* Disable all element transitions */
+      .nav-btn,
+      .logout-btn,
+      .tab-btn,
+      .item-card,
+      .action-btn,
+      .form-input,
+      .form-select,
+      .checkbox-item,
+      .user-select-item,
+      .task-select-item,
+      .avatar-option,
+      .icon-option,
+      .btn,
+      .user-select-check,
+      .task-select-check,
+      .icon-picker-btn {
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1514,30 +1563,30 @@
     <div id="admin-panel" class="tabs-container" style="display: none;">
       <!-- Tabs Navigation -->
       <div class="tabs-nav" role="tablist">
-        <button class="tab-btn active" data-tab="users" onclick="switchTab('users')" role="tab" aria-selected="true" aria-controls="tab-users">
+        <button id="tab-btn-users" class="tab-btn active" data-tab="users" onclick="switchTab('users')" role="tab" aria-selected="true" aria-controls="tab-users">
           <span class="tab-icon" aria-hidden="true">&#x1F465;</span>
           <span>Users</span>
         </button>
-        <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks')" role="tab" aria-selected="false" aria-controls="tab-tasks">
+        <button id="tab-btn-tasks" class="tab-btn" data-tab="tasks" onclick="switchTab('tasks')" role="tab" aria-selected="false" aria-controls="tab-tasks">
           <span class="tab-icon" aria-hidden="true">&#x2705;</span>
           <span>Tasks</span>
         </button>
-        <button class="tab-btn" data-tab="routines" onclick="switchTab('routines')" role="tab" aria-selected="false" aria-controls="tab-routines">
+        <button id="tab-btn-routines" class="tab-btn" data-tab="routines" onclick="switchTab('routines')" role="tab" aria-selected="false" aria-controls="tab-routines">
           <span class="tab-icon" aria-hidden="true">&#x1F4CB;</span>
           <span>Routines</span>
         </button>
-        <button class="tab-btn" data-tab="payouts" onclick="switchTab('payouts')" role="tab" aria-selected="false" aria-controls="tab-payouts">
+        <button id="tab-btn-payouts" class="tab-btn" data-tab="payouts" onclick="switchTab('payouts')" role="tab" aria-selected="false" aria-controls="tab-payouts">
           <span class="tab-icon" aria-hidden="true">&#x1F4B0;</span>
           <span>Payouts</span>
         </button>
-        <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')" role="tab" aria-selected="false" aria-controls="tab-settings">
+        <button id="tab-btn-settings" class="tab-btn" data-tab="settings" onclick="switchTab('settings')" role="tab" aria-selected="false" aria-controls="tab-settings">
           <span class="tab-icon" aria-hidden="true">&#x2699;&#xFE0F;</span>
           <span>Settings</span>
         </button>
       </div>
 
       <!-- Users Tab -->
-      <div id="tab-users" class="tab-content active">
+      <div id="tab-users" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-users">
         <div class="section-header">
           <h2 class="section-title">Family Members</h2>
           <button class="add-btn" onclick="openUserModal()">
@@ -1556,7 +1605,7 @@
       </div>
 
       <!-- Tasks Tab -->
-      <div id="tab-tasks" class="tab-content">
+      <div id="tab-tasks" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-tasks">
         <div class="section-header">
           <h2 class="section-title">Tasks</h2>
           <button class="add-btn" onclick="openTaskModal()">
@@ -1575,7 +1624,7 @@
       </div>
 
       <!-- Routines Tab -->
-      <div id="tab-routines" class="tab-content">
+      <div id="tab-routines" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-routines">
         <div class="section-header">
           <h2 class="section-title">Routines</h2>
           <button class="add-btn" onclick="openRoutineModal()">
@@ -1594,7 +1643,7 @@
       </div>
 
       <!-- Payouts Tab -->
-      <div id="tab-payouts" class="tab-content">
+      <div id="tab-payouts" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-payouts">
         <div class="section-header">
           <h2 class="section-title">Monthly Payouts</h2>
         </div>
@@ -1630,7 +1679,7 @@
       </div>
 
       <!-- Settings Tab -->
-      <div id="tab-settings" class="tab-content">
+      <div id="tab-settings" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-settings">
         <div class="section-header">
           <h2 class="section-title">Household Settings</h2>
         </div>
@@ -1646,7 +1695,7 @@
               </div>
             </div>
             <div class="settings-control">
-              <label class="toggle-switch">
+              <label class="toggle-switch" tabindex="0" role="switch" aria-checked="false" onkeydown="handleToggleKeydown(event, this)">
                 <input type="checkbox" id="vacation-mode-toggle" onchange="toggleVacationMode()">
                 <span class="toggle-slider"></span>
               </label>
@@ -2064,7 +2113,9 @@
     // Switch tabs
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(function(btn) {
-        btn.classList.toggle('active', btn.dataset.tab === tabName);
+        var isSelected = btn.dataset.tab === tabName;
+        btn.classList.toggle('active', isSelected);
+        btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
       });
       document.querySelectorAll('.tab-content').forEach(function(content) {
         content.classList.toggle('active', content.id === 'tab-' + tabName);
