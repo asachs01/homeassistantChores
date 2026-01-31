@@ -2,30 +2,39 @@
 
 A gamified chore tracking and rewards system for families, designed as a Home Assistant add-on.
 
+**Version 1.2.0**
+
 ## Features
 
-- PIN-based login for each family member
-- Track daily routines and chores
-- Build streaks for consistent completion
-- Earn rewards for completed tasks
-- Family dashboard for parents to monitor progress
-- Vacation mode and sick day support
+- **Task Management** - Create tasks with 57 icons, assign dollar values, organize by category
+- **Routines** - Group tasks into daily or weekly routines with flexible scheduling
+- **Streaks & Milestones** - Track consecutive days; earn bonuses at 7, 14, 30, 60, and 90 days
+- **Balance & Earnings** - Children earn money for completed tasks; parents can mark payouts
+- **Notifications** - Parents receive alerts on task completion and missed tasks; daily digest
+- **Parent Dashboard** - Monitor all children's progress, manage payouts, mark sick days
+- **Child Dashboard** - PIN-based login, view tasks, track streaks and earnings
+- **Vacation Mode** - Pause routines without breaking streaks
+- **Sick Days** - Complete all tasks for a child without earning money; preserves streaks
 
 ## Installation
 
-1. Add this repository to your Home Assistant add-on store
-2. Install the "HomeHero" add-on
-3. Start the add-on - no configuration required!
+1. Add this repository to your Home Assistant add-on store:
+   ```
+   https://github.com/asachs01/homehero
+   ```
+2. Find "HomeHero" in the add-on store and click **Install**
+3. Click **Start** - no configuration required
 
 The add-on uses SQLite for self-contained operation. Database is automatically created at `/data/homehero.db`.
 
 ## Usage
 
-After starting the add-on:
-1. Toggle "Show in sidebar" to add HomeHero to your HA sidebar
-2. Complete the onboarding to set up your household
-3. Add family members and create chores
-4. Start tracking!
+1. Toggle **Show in sidebar** in the add-on settings
+2. Open HomeHero and complete the onboarding wizard
+3. Add family members with 4-digit PINs (children) or passwords (parents)
+4. Create routines and tasks, assign to children
+5. Children log in daily to complete tasks and build streaks
+6. Parents monitor progress and manage monthly payouts from the admin panel
 
 ## Support
 
