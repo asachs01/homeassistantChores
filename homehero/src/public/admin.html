@@ -2475,15 +2475,14 @@
         checkbox.type = 'checkbox';
         checkbox.value = user.id;
 
-        if (task && task.assignedUsers && task.assignedUsers.includes(user.id)) {
+        // assignedUsers is an array of objects {id, name}, so use .some() to check
+        if (task && task.assignedUsers && task.assignedUsers.some(function(u) { return u.id === user.id; })) {
           checkbox.checked = true;
           item.classList.add('selected');
         }
 
-        item.onclick = function(e) {
-          if (e.target.tagName !== 'INPUT') {
-            checkbox.checked = !checkbox.checked;
-          }
+        // Use change event - the label auto-toggles the checkbox, so just update the visual state
+        checkbox.onchange = function() {
           item.classList.toggle('selected', checkbox.checked);
         };
 
