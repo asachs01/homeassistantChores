@@ -132,6 +132,26 @@
       color: #E53935;
     }
 
+    .admin-link {
+      background: #F5F5F5;
+      border: none;
+      color: #5D4E6D;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .admin-link:hover {
+      background: #EEEEEE;
+    }
+
     /* Main Content */
     .dashboard-content {
       max-width: 1200px;
@@ -792,6 +812,11 @@
           <div class="toggle-switch" id="vacation-switch" tabindex="0" role="switch" aria-checked="false" onkeydown="handleToggleKeydown(event, this)"></div>
         </div>
 
+        <a href="./admin.html" class="admin-link" id="admin-link" style="display: none;">
+          <span>⚙️</span>
+          <span>Admin Panel</span>
+        </a>
+
         <button class="logout-btn" onclick="logout()">Log Out</button>
       </div>
     </div>
@@ -926,6 +951,9 @@
           showAccessDenied();
           return;
         }
+
+        // Show Admin Panel link for parents
+        document.getElementById('admin-link').style.display = 'flex';
 
         updateDate();
         loadDashboard();
