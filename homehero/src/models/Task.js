@@ -31,11 +31,12 @@ class Task {
       .some(col => col.name === 'type');
 
     if (hasTypeColumn) {
-      // Legacy database - include 'type' column with category value
+      // Legacy database - include 'type' column with valid value for CHECK constraint
+      // Old schema had: CHECK (type IN ('daily', 'weekly', 'one-time'))
       db.prepare(
         `INSERT INTO tasks (id, household_id, name, description, icon, value_cents, category, type, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-      ).run(id, householdId, name, description, icon, valueCents, category, category || 'general', now);
+      ).run(id, householdId, name, description, icon, valueCents, category, 'daily', now);
     } else {
       db.prepare(
         `INSERT INTO tasks (id, household_id, name, description, icon, value_cents, category, created_at)
