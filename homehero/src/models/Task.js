@@ -26,10 +26,22 @@ class Task {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    db.prepare(
-      `INSERT INTO tasks (id, household_id, name, description, icon, value_cents, category, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run(id, householdId, name, description, icon, valueCents, category, now);
+    // Check if legacy 'type' column exists (for backwards compatibility)
+    const hasTypeColumn = db.prepare("PRAGMA table_info(tasks)").all()
+      .some(col => col.name === 'type');
+
+    if (hasTypeColumn) {
+      // Legacy database - include 'type' column with category value
+      db.prepare(
+        `INSERT INTO tasks (id, household_id, name, description, icon, value_cents, category, type, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(id, householdId, name, description, icon, valueCents, category, category || 'general', now);
+    } else {
+      db.prepare(
+        `INSERT INTO tasks (id, household_id, name, description, icon, value_cents, category, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(id, householdId, name, description, icon, valueCents, category, now);
+    }
 
     const row = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
     const task = Task.formatTask(row);
