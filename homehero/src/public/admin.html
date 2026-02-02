@@ -570,6 +570,7 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
       min-width: 80px;
       justify-content: center;
     }
@@ -584,7 +585,9 @@
     }
 
     .checkbox-item input {
-      display: none;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
     }
 
     /* Multi-select for users */
@@ -605,6 +608,7 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
     }
 
     .user-select-item:hover {
@@ -616,7 +620,9 @@
     }
 
     .user-select-item input {
-      display: none;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .user-select-avatar {
@@ -665,6 +671,7 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
     }
 
     .task-select-item:hover {
@@ -676,7 +683,9 @@
     }
 
     .task-select-item input {
-      display: none;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .task-select-icon {
@@ -2715,10 +2724,10 @@
     }
 
     function openIconPicker() {
-      // Update selected state based on current icon
-      var currentEmoji = document.getElementById('task-icon').value;
+      // Update selected state based on current icon ID
+      var currentIconId = document.getElementById('task-icon').value;
       document.querySelectorAll('.icon-option').forEach(function(opt) {
-        opt.classList.toggle('selected', opt.dataset.iconEmoji === currentEmoji);
+        opt.classList.toggle('selected', opt.dataset.iconId === currentIconId);
       });
 
       document.getElementById('icon-picker-modal').classList.add('visible');
@@ -2730,7 +2739,7 @@
 
     function selectIcon(icon) {
       selectedTaskIcon = icon;
-      document.getElementById('task-icon').value = icon.emoji;
+      document.getElementById('task-icon').value = icon.id;  // Store icon ID, not emoji
       document.getElementById('task-icon-preview').textContent = icon.emoji;
       document.getElementById('task-icon-label').textContent = icon.name;
 
@@ -2753,17 +2762,26 @@
       });
     }
 
-    function updateIconPickerDisplay(iconEmoji) {
-      if (iconEmoji) {
-        document.getElementById('task-icon-preview').textContent = iconEmoji;
-        // Find the icon name from taskIcons
-        var icon = taskIcons.find(function(i) { return i.emoji === iconEmoji; });
+    function updateIconPickerDisplay(iconId) {
+      if (iconId) {
+        // Find the icon by ID from taskIcons
+        var icon = taskIcons.find(function(i) { return i.id === iconId; });
         if (icon) {
+          document.getElementById('task-icon-preview').textContent = icon.emoji;
           document.getElementById('task-icon-label').textContent = icon.name;
           selectedTaskIcon = icon;
         } else {
-          document.getElementById('task-icon-label').textContent = 'Custom icon';
-          selectedTaskIcon = null;
+          // Fallback for legacy emoji values - try to find by emoji
+          var legacyIcon = taskIcons.find(function(i) { return i.emoji === iconId; });
+          if (legacyIcon) {
+            document.getElementById('task-icon-preview').textContent = legacyIcon.emoji;
+            document.getElementById('task-icon-label').textContent = legacyIcon.name;
+            selectedTaskIcon = legacyIcon;
+          } else {
+            document.getElementById('task-icon-preview').textContent = iconId;
+            document.getElementById('task-icon-label').textContent = 'Custom icon';
+            selectedTaskIcon = null;
+          }
         }
       } else {
         document.getElementById('task-icon-preview').textContent = '-';

@@ -4,16 +4,17 @@
 
 const taskIcons = require('../data/task-icons.json');
 
-// Create a set of valid icon IDs for quick lookup
+// Create sets for quick lookup - support both IDs and emojis for backwards compatibility
 const validIconIds = new Set(taskIcons.map(icon => icon.id));
+const validIconEmojis = new Set(taskIcons.map(icon => icon.emoji));
 
 /**
- * Check if an icon ID is valid
- * @param {string} iconId - The icon ID to validate
+ * Check if an icon value is valid (accepts both icon ID and emoji for backwards compatibility)
+ * @param {string} iconValue - The icon ID or emoji to validate
  * @returns {boolean} True if valid, false otherwise
  */
-function isValidIcon(iconId) {
-  return validIconIds.has(iconId);
+function isValidIcon(iconValue) {
+  return validIconIds.has(iconValue) || validIconEmojis.has(iconValue);
 }
 
 /**
