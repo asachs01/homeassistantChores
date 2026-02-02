@@ -1399,7 +1399,7 @@
 
       var icon = document.createElement('div');
       icon.className = 'task-icon';
-      icon.textContent = task.icon || '\u{2705}';
+      icon.textContent = task.iconEmoji || task.icon || '\u{2705}';
 
       var info = document.createElement('div');
       info.className = 'task-info';

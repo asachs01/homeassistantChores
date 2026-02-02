@@ -1981,6 +1981,21 @@
     var taskIcons = [];
     var selectedTaskIcon = null;
 
+    // Helper function to get emoji from icon ID (handles both ID and legacy emoji values)
+    function getIconEmoji(iconValue) {
+      if (!iconValue) return '\u{2705}'; // Default checkmark
+      // Try to find by ID first
+      var icon = taskIcons.find(function(i) { return i.id === iconValue; });
+      if (icon) return icon.emoji;
+      // Check if it's already an emoji (legacy data)
+      var legacyIcon = taskIcons.find(function(i) { return i.emoji === iconValue; });
+      if (legacyIcon) return legacyIcon.emoji;
+      // If it looks like an emoji (not alphanumeric), return as-is
+      if (!/^[a-z0-9-]+$/i.test(iconValue)) return iconValue;
+      // Unknown ID, return default
+      return '\u{2705}';
+    }
+
     // Payouts data
     var payoutsData = null;
     var monthNames = ['', 'January', 'February', 'March', 'April', 'May', 'June',
@@ -2426,7 +2441,7 @@
 
         var icon = document.createElement('div');
         icon.className = 'item-icon task';
-        icon.textContent = task.icon || '\u{2705}';
+        icon.textContent = getIconEmoji(task.icon);
 
         var info = document.createElement('div');
         info.className = 'item-info';
@@ -2912,7 +2927,7 @@
 
             var chipIcon = document.createElement('span');
             chipIcon.className = 'chip-icon';
-            chipIcon.textContent = task.icon || '\u{2705}';
+            chipIcon.textContent = getIconEmoji(task.icon);
 
             chip.appendChild(chipIcon);
             chip.appendChild(document.createTextNode(task.name));
@@ -2972,7 +2987,7 @@
 
         var iconSpan = document.createElement('span');
         iconSpan.className = 'task-select-icon';
-        iconSpan.textContent = task.icon || '\u{2705}';
+        iconSpan.textContent = getIconEmoji(task.icon);
 
         var nameSpan = document.createElement('span');
         nameSpan.className = 'task-select-name';

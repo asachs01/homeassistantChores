@@ -1441,7 +1441,7 @@
 
           var icon = document.createElement('span');
           icon.className = 'task-icon';
-          icon.textContent = task.icon || '\u{2705}';
+          icon.textContent = task.iconEmoji || task.icon || '\u{2705}';
 
           var taskName = document.createElement('span');
           taskName.className = 'task-name';

@@ -18,13 +18,17 @@ function isValidIcon(iconValue) {
 }
 
 /**
- * Get icon data by ID
- * @param {string} iconId - The icon ID
+ * Get icon data by ID or emoji (for backwards compatibility)
+ * @param {string} iconValue - The icon ID or emoji
  * @returns {Object|null} The icon data or null if not found
  */
-function getIconData(iconId) {
-  if (!iconId) return null;
-  return taskIcons.find(icon => icon.id === iconId) || null;
+function getIconData(iconValue) {
+  if (!iconValue) return null;
+  // Try to find by ID first
+  const byId = taskIcons.find(icon => icon.id === iconValue);
+  if (byId) return byId;
+  // Fallback: try to find by emoji (legacy data)
+  return taskIcons.find(icon => icon.emoji === iconValue) || null;
 }
 
 /**
