@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-02-01
+
+### Fixed
+- **Icon display showing ID instead of emoji** (`src/public/admin.html`, `src/public/dashboard.html`, `src/public/family-dashboard.html`)
+  - Added getIconEmoji() helper function to convert icon IDs to emojis
+  - Dashboard pages now use iconEmoji from API response
+  - getIconData() validator now handles both icon IDs and legacy emoji values
+
 ## [1.2.3] - 2026-02-01
 
 ### Fixed
